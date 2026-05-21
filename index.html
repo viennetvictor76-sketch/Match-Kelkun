@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KelkunMatch — BTP & Artisanat</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── CHARTE KELKUN ── navy #1C2D5E + teal #00B4A6 */
+:root{
+  --orange:#00B4A6;        /* teal Kelkun — remplace orange */
+  --orange-light:#00CFC0;  /* teal clair */
+  --orange-pale:#E6FAFA;   /* teal très pâle */
+  --dark:#1C2D5E;          /* navy Kelkun */
+  --dark2:#152249;         /* navy foncé */
+  --accent:#FFD166;        /* jaune accent — inchangé */
+  --green:#00B4A6;         /* même teal */
+  --pink:#EF476F;
+  --blue:#00B4A6;          /* unifié teal */
+  --white:#FAFAFA;
+  --gray:#8B98B8;
+  --gray2:#5A6A8A;
+  --card-bg:#FFFFFF;
+  --radius:24px;--radius-sm:12px;--radius-xs:8px;
+}
+/* ── LOGO AK. SVG INLINE ── */
+.ak-logo-svg{display:inline-block;line-height:0;}
+.ak-logo-svg svg{fill:#FFFFFF;}
+.ak-logo-svg.dark svg{fill:#1C2D5E;}
+.ak-logo-svg.teal svg{fill:var(--orange);}
+.rec-topbar-logo{display:flex;align-items:center;gap:8px;}
+/* Fond global navy */
+body{background:var(--dark)!important;}
+/* Dégradés d'arrière-plan — navy→navy foncé */
+#screen-welcome::before{background:radial-gradient(circle,rgba(0,180,166,.22) 0%,transparent 70%)!important;}
+#screen-welcome::after{background:radial-gradient(circle,rgba(0,180,166,.12) 0%,transparent 70%)!important;}
+#screen-login::before{background:radial-gradient(circle,rgba(0,180,166,.15) 0%,transparent 70%)!important;}
+#screen-login::after{background:radial-gradient(circle,rgba(0,180,166,.10) 0%,transparent 70%)!important;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--white);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+#screen-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden;}
+#screen-welcome::before{content:'';position:absolute;width:700px;height:700px;background:radial-gradient(circle,rgba(0,180,166,.18) 0%,transparent 70%);top:-200px;right:-200px;border-radius:50%;pointer-events:none;}
+#screen-welcome::after{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(6,214,160,.1) 0%,transparent 70%);bottom:-120px;left:-120px;border-radius:50%;pointer-events:none;}
+.logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,180,166,.15);border:1px solid rgba(0,180,166,.3);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:500;color:var(--orange-light);margin-bottom:2rem;letter-spacing:.05em;text-transform:uppercase;}
+.welcome-title{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,7vw,5rem);font-weight:800;line-height:1.05;margin-bottom:1.5rem;}
+.welcome-title .hl{color:var(--orange);display:block;}
+.welcome-sub{font-size:1.05rem;color:var(--gray);max-width:500px;margin:0 auto 1.5rem;line-height:1.7;}
+.actors-row{display:flex;align-items:center;gap:0;justify-content:center;margin:1.5rem 0 2.5rem;}
+.actor-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:10px 18px;font-size:.88rem;font-weight:500;}
+.actor-pill.a{border-color:rgba(58,134,255,.4);color:#7EB8FF;}
+.actor-pill.b{border-color:rgba(0,180,166,.4);color:var(--orange-light);}
+.actor-pill.c{border-color:rgba(6,214,160,.4);color:#4DFFCC;}
+.actor-arrow{font-size:1rem;color:var(--gray2);padding:0 8px;}
+.floating-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:480px;}
+.tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--gray);}
+.btn-main{display:inline-flex;align-items:center;gap:10px;background:var(--orange);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;padding:16px 36px;border-radius:100px;border:none;cursor:pointer;transition:all .2s;}
+.btn-main:hover{background:var(--orange-light);transform:translateY(-2px);}
+.btn-back{background:rgba(255,255,255,.08);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:500;font-size:.9rem;padding:13px 24px;border-radius:100px;border:none;cursor:pointer;transition:background .2s;}
+.btn-back:hover{background:rgba(255,255,255,.14);}
+.btn-next{flex:1;background:var(--orange);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;padding:14px 28px;border-radius:100px;border:none;cursor:pointer;transition:all .2s;}
+.btn-next:hover{background:var(--orange-light);}
+
+/* FORM */
+#screen-form{flex-direction:column;}
+#form-inner{max-width:700px;width:100%;margin:0 auto;padding:0 1.5rem;}
+.form-header{padding:1.8rem 0 1.5rem;}
+.step-bar{display:flex;gap:6px;margin-bottom:1.6rem;}
+.step-seg{height:4px;border-radius:2px;background:rgba(255,255,255,.1);flex:1;transition:background .3s;}
+.step-seg.active{background:var(--orange);}
+.step-seg.done{background:var(--green);}
+.form-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:700;margin-bottom:.3rem;}
+.form-subtitle{color:var(--gray);font-size:.88rem;}
+.form-section{display:none;}
+.form-section.visible{display:block;animation:slideIn .35s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.form-group{margin-bottom:1.3rem;}
+label{display:block;font-size:.78rem;font-weight:500;color:var(--gray);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:var(--radius-sm);color:var(--white);font-family:'DM Sans',sans-serif;font-size:.92rem;padding:12px 15px;outline:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--orange);background:rgba(0,180,166,.04);}
+select option{background:var(--dark2);}
+textarea{resize:none;}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:100px;padding:7px 15px;font-size:.83rem;cursor:pointer;transition:all .2s;color:var(--white);user-select:none;}
+.chip:hover{border-color:var(--orange);}
+.chip.selected{background:rgba(0,180,166,.15);border-color:var(--orange);color:var(--orange-light);}
+.form-nav{display:flex;gap:12px;margin-top:1.8rem;padding-bottom:3rem;}
+
+/* GEO SLIDER */
+.geo-value{text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:2rem;color:var(--orange);margin-bottom:.3rem;}
+.geo-value small{font-size:.9rem;font-weight:400;color:var(--gray);}
+.geo-slider{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;outline:none;cursor:pointer;margin:8px 0;}
+.geo-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--orange);cursor:pointer;border:3px solid var(--dark);}
+.geo-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--orange);cursor:pointer;border:3px solid var(--dark);}
+.geo-labels{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray2);margin-top:4px;}
+
+/* TABS */
+.tabs-bar{display:flex;gap:4px;background:rgba(255,255,255,.05);border-radius:var(--radius-sm);padding:4px;margin-bottom:1.3rem;}
+.tab-btn{flex:1;padding:10px;border-radius:8px;border:none;background:transparent;color:var(--gray);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:rgba(0,180,166,.2);color:var(--orange-light);font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.visible{display:block;animation:slideIn .3s ease;}
+.upload-zone{border:2px dashed rgba(255,255,255,.14);border-radius:var(--radius-sm);padding:1.8rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:.8rem;}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--orange);background:rgba(0,180,166,.05);}
+.upload-icon{font-size:2.2rem;margin-bottom:.6rem;}
+.upload-title{font-weight:600;font-size:.95rem;margin-bottom:.2rem;}
+.upload-sub{font-size:.78rem;color:var(--gray);}
+.file-badge{display:none;align-items:center;gap:10px;background:rgba(6,214,160,.1);border:1px solid rgba(6,214,160,.25);border-radius:var(--radius-xs);padding:9px 13px;font-size:.83rem;color:#4DFFCC;margin-top:.6rem;}
+.file-badge.visible{display:flex;}
+.file-remove{margin-left:auto;background:none;border:none;color:#4DFFCC;cursor:pointer;font-size:.78rem;}
+
+/* SWIPE */
+#screen-swipe{flex-direction:column;}
+.swipe-inner{max-width:500px;width:100%;margin:0 auto;padding:0 1.4rem;display:flex;flex-direction:column;flex:1;}
+.profile-bar{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:10px 14px;margin-top:1.2rem;margin-bottom:.8rem;}
+.profile-avatar{width:36px;height:36px;border-radius:50%;background:rgba(0,180,166,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:var(--orange-light);flex-shrink:0;}
+.profile-name{font-weight:600;font-size:.85rem;}
+.profile-detail{font-size:.72rem;color:var(--gray);}
+.profile-geo{font-size:.75rem;color:#4DFFCC;margin-left:auto;white-space:nowrap;}
+.swipe-header{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0 .8rem;}
+.swipe-header h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;}
+.swipe-meta{font-size:11px;color:var(--gray);margin-top:2px;}
+.match-counter{background:rgba(0,180,166,.15);border:1px solid rgba(0,180,166,.3);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;color:var(--orange-light);}
+.progress-bar{background:rgba(255,255,255,.08);border-radius:100px;height:4px;margin-bottom:1rem;}
+.progress-fill{background:var(--orange);height:100%;border-radius:100px;transition:width .4s ease;}
+.swipe-hint{display:flex;justify-content:space-between;font-size:11px;color:var(--gray2);margin-bottom:.5rem;}
+.card-stack{position:relative;height:490px;margin-bottom:1.4rem;}
+.job-card{position:absolute;inset:0;background:var(--card-bg);border-radius:var(--radius);padding:1.5rem;color:var(--dark);display:flex;flex-direction:column;cursor:grab;user-select:none;box-shadow:0 24px 60px rgba(0,0,0,.45);transform-origin:center bottom;}
+.job-card:nth-child(2){transform:scale(.96) translateY(12px);z-index:1;}
+.job-card:nth-child(3){transform:scale(.92) translateY(24px);z-index:0;}
+.job-card:first-child{z-index:10;}
+.swipe-overlay{position:absolute;inset:0;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;opacity:0;pointer-events:none;border:5px solid transparent;}
+.overlay-like{background:rgba(6,214,160,.15);border-color:var(--green);color:var(--green);transform:rotate(-12deg);}
+.overlay-nope{background:rgba(239,71,111,.15);border-color:var(--pink);color:var(--pink);transform:rotate(12deg);}
+.card-top-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.7rem;}
+.card-emoji-big{font-size:2.8rem;line-height:1;}
+.school-badge{display:inline-flex;align-items:center;gap:4px;background:#EEF4FF;color:#2D6FD4;border-radius:100px;padding:4px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.card-sector{display:inline-flex;background:var(--orange-pale);color:var(--orange);border-radius:100px;padding:3px 11px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;}
+.card-title{font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:800;color:var(--dark);margin-bottom:.15rem;line-height:1.2;}
+.card-company{font-size:.83rem;color:#666;margin-bottom:.65rem;font-weight:500;}
+.card-geo-row{display:flex;align-items:center;gap:5px;font-size:.78rem;color:#888;margin-bottom:.6rem;}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.7rem;}
+.card-tag{background:#F4F4F8;border-radius:100px;padding:3px 11px;font-size:10px;font-weight:500;color:#555;}
+.card-desc{font-size:.8rem;color:#666;line-height:1.55;flex:1;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.9rem;padding-top:.8rem;border-top:1px solid #F0F0F5;}
+.card-salary{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:var(--dark);}
+.card-type{background:#EBF9F5;color:#0A8A6A;border-radius:100px;padding:3px 11px;font-size:10px;font-weight:700;}
+.swipe-actions{display:flex;justify-content:center;align-items:center;gap:1.2rem;margin-bottom:1.5rem;}
+.action-btn{border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.action-nope{width:62px;height:62px;font-size:1.4rem;background:rgba(239,71,111,.1);color:var(--pink);border:2px solid rgba(239,71,111,.22);}
+.action-info{width:46px;height:46px;font-size:1rem;background:rgba(255,209,102,.1);color:var(--accent);border:2px solid rgba(255,209,102,.22);}
+.action-like{width:62px;height:62px;font-size:1.4rem;background:rgba(6,214,160,.1);color:var(--green);border:2px solid rgba(6,214,160,.22);}
+.action-btn:hover{transform:scale(1.1);}
+.action-btn:active{transform:scale(.95);}
+.fly-right{animation:flyR .42s ease forwards;}
+.fly-left{animation:flyL .42s ease forwards;}
+@keyframes flyR{to{transform:translateX(150%) rotate(30deg);opacity:0;}}
+@keyframes flyL{to{transform:translateX(-150%) rotate(-30deg);opacity:0;}}
+
+/* MATCH */
+#screen-match{flex-direction:column;align-items:center;overflow-y:auto;padding:2rem;}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.confetti-piece{position:absolute;width:10px;height:10px;border-radius:2px;animation:cfall linear infinite;}
+@keyframes cfall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.match-content{position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;padding-top:.5rem;}
+.match-icon{font-size:3.5rem;margin-bottom:.5rem;animation:bounceIn .6s ease;}
+@keyframes bounceIn{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+.match-title{font-family:'Syne',sans-serif;font-size:2.3rem;font-weight:800;margin-bottom:.3rem;}
+.match-title span{color:var(--orange);}
+.match-sub-txt{color:var(--gray);font-size:.85rem;margin-bottom:1.2rem;text-align:center;}
+.tri-row{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:1.3rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem;}
+.tri-node{text-align:center;flex:1;}
+.tri-icon{font-size:1.6rem;margin-bottom:3px;}
+.tri-label{font-size:.65rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;}
+.tri-val{font-size:.78rem;font-weight:600;margin-top:2px;}
+.tri-val.orange{color:var(--orange-light);}
+.tri-val.blue{color:#7EB8FF;}
+.tri-val.green{color:#4DFFCC;}
+.tri-sep{width:1px;height:48px;background:rgba(255,255,255,.1);}
+.match-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:1.3rem 1.5rem;margin-bottom:1rem;width:100%;}
+.match-job-name{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:.15rem;}
+.match-company-txt{color:var(--gray);font-size:.83rem;margin-bottom:.2rem;}
+.match-school-line{display:flex;align-items:center;gap:5px;font-size:.75rem;color:#7EB8FF;margin-bottom:.9rem;}
+.contact-info{display:flex;flex-direction:column;gap:7px;}
+.contact-row{display:flex;align-items:center;gap:9px;font-size:.82rem;}
+.contact-icon{width:30px;height:30px;border-radius:8px;background:rgba(0,180,166,.15);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.notif-box{background:rgba(58,134,255,.07);border:1px solid rgba(58,134,255,.18);border-radius:var(--radius-sm);padding:11px 14px;font-size:.78rem;color:#7EB8FF;margin-bottom:1rem;width:100%;line-height:1.55;}
+.btn-contact{width:100%;background:var(--orange);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;padding:14px;border-radius:100px;border:none;cursor:pointer;transition:all .2s;margin-bottom:.7rem;}
+.btn-contact:hover{background:var(--orange-light);}
+.btn-continue{background:transparent;color:var(--gray);font-size:.88rem;padding:10px 22px;border:1px solid rgba(255,255,255,.1);border-radius:100px;cursor:pointer;transition:all .2s;}
+.btn-continue:hover{border-color:rgba(255,255,255,.3);color:var(--white);}
+
+/* END */
+#screen-end{flex-direction:column;align-items:center;overflow-y:auto;padding:2rem;}
+.end-content{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;padding-top:1.5rem;}
+.end-emoji{font-size:3.5rem;margin-bottom:1rem;}
+.matches-list{display:flex;flex-direction:column;gap:9px;margin:1.1rem 0 1.8rem;width:100%;}
+.match-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:11px 14px;display:flex;align-items:center;gap:11px;}
+.mi-emoji{font-size:1.7rem;}
+.mi-name{font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;}
+.mi-co{font-size:.75rem;color:var(--gray);}
+.mi-school{font-size:.7rem;color:#7EB8FF;margin-top:1px;}
+
+/* SCHOOL CHOICE */
+.school-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:.4rem;}
+.school-choice-btn{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);padding:1.2rem 1rem;cursor:pointer;color:var(--white);font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center;}
+.school-choice-btn:hover{border-color:var(--orange);background:rgba(0,180,166,.07);}
+.school-choice-btn.chosen{background:rgba(0,180,166,.15);border-color:var(--orange);}
+.scb-icon{font-size:2rem;}
+.scb-label{font-size:.83rem;font-weight:500;line-height:1.3;}
+
+/* TRAINING CENTER CARD */
+.training-section{margin-top:1.2rem;width:100%;}
+.training-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:.8rem;display:flex;align-items:center;gap:7px;}
+.training-card{background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);border-radius:var(--radius-sm);padding:1rem 1.1rem;margin-bottom:.7rem;cursor:pointer;transition:all .2s;}
+.training-card:hover{background:rgba(255,209,102,.12);border-color:rgba(255,209,102,.4);}
+.training-card-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.15rem;}
+.training-card-type{font-size:.73rem;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem;}
+.training-card-details{font-size:.78rem;color:var(--gray);line-height:1.5;}
+.training-card-dist{font-size:.73rem;color:#4DFFCC;margin-top:.4rem;}
+.btn-training{width:100%;background:var(--accent);color:var(--dark);font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;padding:12px;border-radius:100px;border:none;cursor:pointer;transition:all .2s;margin-top:.4rem;margin-bottom:.5rem;}
+.btn-training:hover{opacity:.85;}
+
+/* ── ORIENTATION IA ── */
+.orient-intro{background:linear-gradient(135deg,rgba(58,134,255,.08),rgba(0,180,166,.06));border:1px solid rgba(58,134,255,.2);border-radius:var(--radius-sm);padding:1.1rem 1.2rem;margin-bottom:1.1rem;font-size:.83rem;color:var(--gray);line-height:1.6;}
+.orient-intro strong{color:#7EB8FF;}
+.orient-upload-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:1rem;}
+.orient-upload-btn{display:inline-flex;align-items:center;gap:7px;background:rgba(58,134,255,.12);border:1px solid rgba(58,134,255,.25);color:#7EB8FF;border-radius:100px;padding:9px 18px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.orient-upload-btn:hover{background:rgba(58,134,255,.22);}
+.orient-cv-badge{display:none;align-items:center;gap:7px;background:rgba(6,214,160,.09);border:1px solid rgba(6,214,160,.22);border-radius:100px;padding:6px 14px;font-size:.78rem;color:#4DFFCC;}
+.orient-cv-badge.visible{display:flex;}
+.orient-chat-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);min-height:240px;max-height:340px;overflow-y:auto;padding:.9rem;display:flex;flex-direction:column;gap:.75rem;margin-bottom:.8rem;}
+.orient-msg{display:flex;gap:9px;align-items:flex-start;}
+.orient-msg.ai{flex-direction:row;}
+.orient-msg.user{flex-direction:row-reverse;}
+.orient-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+.orient-avatar.ai{background:rgba(58,134,255,.18);color:#7EB8FF;}
+.orient-avatar.user{background:rgba(0,180,166,.18);color:var(--orange-light);}
+.orient-bubble{max-width:88%;background:rgba(255,255,255,.06);border-radius:14px;padding:.65rem .9rem;font-size:.82rem;line-height:1.55;color:var(--white);}
+.orient-msg.user .orient-bubble{background:rgba(0,180,166,.13);border-radius:14px 14px 4px 14px;}
+.orient-msg.ai .orient-bubble{border-radius:14px 14px 14px 4px;}
+.orient-typing{display:flex;gap:5px;align-items:center;padding:.3rem 0;}
+.orient-typing span{width:7px;height:7px;border-radius:50%;background:var(--gray);animation:typingDot 1.2s infinite;}
+.orient-typing span:nth-child(2){animation-delay:.2s;}
+.orient-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.orient-choices{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:.6rem;}
+.orient-choice-btn{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);border-radius:100px;padding:7px 14px;font-size:.79rem;cursor:pointer;color:var(--white);transition:all .2s;}
+.orient-choice-btn:hover{border-color:var(--orange);background:rgba(0,180,166,.08);}
+.orient-choice-btn.picked{background:rgba(0,180,166,.18);border-color:var(--orange);color:var(--orange-light);}
+.orient-action-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:.4rem;}
+.btn-orient-start{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#3A86FF,var(--orange));color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;padding:11px 22px;border-radius:100px;border:none;cursor:pointer;transition:opacity .2s;}
+.btn-orient-start:hover{opacity:.85;}
+.btn-orient-start:disabled{opacity:.45;cursor:not-allowed;}
+.orient-results{display:none;margin-top:.4rem;}
+.orient-results.visible{display:block;}
+.orient-results-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:.7rem;display:flex;align-items:center;gap:7px;}
+.orient-sector-card{background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);border-radius:var(--radius-sm);padding:.9rem 1rem;margin-bottom:.6rem;}
+.orient-sector-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--accent);margin-bottom:.2rem;}
+.orient-sector-why{font-size:.78rem;color:var(--gray);line-height:1.5;margin-bottom:.5rem;}
+.orient-sector-formations{font-size:.75rem;color:#4DFFCC;line-height:1.6;}
+.orient-progress-lbl{font-size:.73rem;color:var(--gray2);text-align:center;margin-top:.4rem;}
+
+/* ══ LOGIN SCREEN ══ */
+#screen-login{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden;min-height:100vh;}
+#screen-login::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,180,166,.15) 0%,transparent 70%);top:-150px;right:-150px;border-radius:50%;pointer-events:none;}
+#screen-login::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(58,134,255,.12) 0%,transparent 70%);bottom:-100px;left:-100px;border-radius:50%;pointer-events:none;}
+.login-box{width:100%;max-width:440px;position:relative;z-index:1;}
+.login-logo{text-align:center;margin-bottom:2.5rem;}
+.login-logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,180,166,.15);border:1px solid rgba(0,180,166,.3);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:500;color:var(--orange-light);letter-spacing:.05em;text-transform:uppercase;margin-bottom:1rem;}
+.login-logo h1{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;margin-bottom:.3rem;}
+.login-logo p{color:var(--gray);font-size:.88rem;}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:2rem;}
+.role-card{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.09);border-radius:var(--radius);padding:1.6rem 1.2rem;cursor:pointer;transition:all .25s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+.role-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.role-card.student:hover,.role-card.student.chosen{border-color:var(--orange);background:rgba(0,180,166,.08);}
+.role-card.recruiter:hover,.role-card.recruiter.chosen{border-color:#3A86FF;background:rgba(58,134,255,.08);}
+.role-card-icon{font-size:2.5rem;}
+.role-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+.role-card-sub{font-size:.76rem;color:var(--gray);line-height:1.45;}
+.login-form{display:none;}
+.login-form.visible{display:block;animation:slideIn .3s ease;}
+.login-field{margin-bottom:1rem;}
+.login-field label{display:block;font-size:.75rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.btn-login{width:100%;background:var(--orange);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;padding:15px;border-radius:100px;border:none;cursor:pointer;transition:all .2s;margin-top:.5rem;}
+.btn-login.blue{background:#3A86FF;}
+.btn-login:hover{opacity:.88;transform:translateY(-1px);}
+.login-switch{text-align:center;margin-top:1.2rem;font-size:.8rem;color:var(--gray);}
+.login-switch a{color:var(--orange);cursor:pointer;text-decoration:none;font-weight:600;}
+.login-divider{display:flex;align-items:center;gap:12px;margin:1.4rem 0;color:var(--gray2);font-size:.78rem;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+.demo-accounts{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius-sm);padding:.9rem 1rem;font-size:.76rem;color:var(--gray);line-height:1.8;}
+.demo-accounts strong{color:var(--white);}
+
+/* ══ RECRUITER SCREENS ══ */
+#screen-rec-dashboard,#screen-rec-new-job,#screen-rec-matches,#screen-rec-students{display:none;flex-direction:column;min-height:100vh;}
+.rec-topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.07);position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);}
+.rec-topbar-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--white);}
+.rec-topbar-logo span{color:var(--orange);}
+.rec-topbar-user{display:flex;align-items:center;gap:10px;}
+.rec-avatar{width:34px;height:34px;border-radius:50%;background:rgba(58,134,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#7EB8FF;}
+.rec-user-info{font-size:.8rem;}
+.rec-user-name{font-weight:600;color:var(--white);}
+.rec-user-co{font-size:.72rem;color:var(--gray);}
+.btn-logout{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--gray);font-size:.76rem;padding:6px 14px;border-radius:100px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{border-color:var(--pink);color:var(--pink);}
+
+/* Dashboard stats */
+.rec-inner{max-width:860px;width:100%;margin:0 auto;padding:1.5rem 1.4rem;}
+.rec-welcome{margin-bottom:1.6rem;}
+.rec-welcome h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.2rem;}
+.rec-welcome p{color:var(--gray);font-size:.85rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.8rem;}
+.stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.1rem 1rem;text-align:center;}
+.stat-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:.2rem;}
+.stat-val.orange{color:var(--orange);}
+.stat-val.green{color:var(--green);}
+.stat-val.blue{color:#7EB8FF;}
+.stat-lbl{font-size:.72rem;color:var(--gray);}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.section-hdr h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;}
+.btn-sm{background:var(--orange);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;padding:9px 18px;border-radius:100px;border:none;cursor:pointer;transition:all .2s;}
+.btn-sm:hover{background:var(--orange-light);}
+.btn-sm.blue{background:#3A86FF;}
+.btn-sm.blue:hover{background:#5A9EFF;}
+.btn-sm.ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--white);}
+.btn-sm.ghost:hover{border-color:var(--orange);color:var(--orange-light);}
+
+/* Job offer cards */
+.job-offers-list{display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+.offer-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1rem 1.2rem;display:flex;align-items:center;gap:12px;transition:border-color .2s;}
+.offer-card:hover{border-color:rgba(0,180,166,.3);}
+.offer-emoji{font-size:2rem;flex-shrink:0;}
+.offer-info{flex:1;min-width:0;}
+.offer-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.15rem;}
+.offer-meta{font-size:.74rem;color:var(--gray);}
+.offer-badges{display:flex;gap:6px;margin-top:.4rem;flex-wrap:wrap;}
+.offer-badge{background:rgba(255,255,255,.07);border-radius:100px;padding:2px 10px;font-size:.68rem;font-weight:600;color:var(--gray);}
+.offer-badge.active{background:rgba(6,214,160,.12);color:#4DFFCC;border:1px solid rgba(6,214,160,.22);}
+.offer-badge.matches{background:rgba(0,180,166,.12);color:var(--orange-light);border:1px solid rgba(0,180,166,.22);}
+.offer-actions{display:flex;gap:7px;flex-shrink:0;}
+
+/* New job form */
+.rec-form-wrap{max-width:680px;width:100%;margin:0 auto;padding:1.5rem 1.4rem;}
+.rec-form-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:.3rem;}
+.rec-form-sub{color:var(--gray);font-size:.85rem;margin-bottom:1.6rem;}
+
+/* Candidate cards for recruiter */
+.cand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:1.5rem;}
+.cand-card{background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:1.1rem;transition:all .25s;cursor:pointer;}
+.cand-card:hover{border-color:rgba(58,134,255,.4);transform:translateY(-2px);}
+.cand-card.matched{border-color:rgba(6,214,160,.35);background:rgba(6,214,160,.04);}
+.cand-header{display:flex;align-items:center;gap:10px;margin-bottom:.8rem;}
+.cand-avatar{width:40px;height:40px;border-radius:50%;background:rgba(0,180,166,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:var(--orange-light);flex-shrink:0;}
+.cand-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;}
+.cand-meta{font-size:.72rem;color:var(--gray);}
+.cand-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.7rem;}
+.cand-tag{background:rgba(255,255,255,.06);border-radius:100px;padding:2px 9px;font-size:.68rem;color:var(--gray);}
+.cand-match-score{display:flex;align-items:center;gap:6px;font-size:.75rem;margin-top:.5rem;}
+.score-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1);}
+.score-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--orange),var(--green));}
+.score-pct{font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;color:var(--green);}
+.cand-actions{display:flex;gap:7px;margin-top:.8rem;}
+.btn-cand-contact{flex:1;background:rgba(6,214,160,.15);border:1px solid rgba(6,214,160,.3);color:#4DFFCC;font-family:'Syne',sans-serif;font-weight:700;font-size:.75rem;padding:8px;border-radius:100px;cursor:pointer;transition:all .2s;}
+.btn-cand-contact:hover{background:rgba(6,214,160,.25);}
+.btn-cand-pass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--gray);font-size:.75rem;padding:8px 14px;border-radius:100px;cursor:pointer;transition:all .2s;}
+.btn-cand-pass:hover{border-color:var(--pink);color:var(--pink);}
+
+/* Match notification banner */
+.match-banner{background:linear-gradient(135deg,rgba(6,214,160,.12),rgba(58,134,255,.08));border:1px solid rgba(6,214,160,.25);border-radius:var(--radius-sm);padding:1rem 1.2rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:12px;}
+.match-banner-icon{font-size:1.8rem;}
+.match-banner-txt strong{display:block;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:#4DFFCC;}
+.match-banner-txt span{font-size:.78rem;color:var(--gray);}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.2rem;}
+.filter-chip{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:100px;padding:6px 14px;font-size:.76rem;cursor:pointer;color:var(--gray);transition:all .2s;}
+.filter-chip:hover,.filter-chip.active{background:rgba(58,134,255,.15);border-color:#3A86FF;color:#7EB8FF;}
+
+/* Empty state */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--gray);}
+.empty-state-icon{font-size:3rem;margin-bottom:1rem;}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:.5rem;}
+
+/* Nav bottom recruiter */
+.rec-bottom-nav{position:sticky;bottom:0;background:rgba(26,26,46,.95);border-top:1px solid rgba(255,255,255,.08);display:flex;backdrop-filter:blur(10px);z-index:40;}
+.rec-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:none;border:none;cursor:pointer;color:var(--gray);font-size:.65rem;font-family:'DM Sans',sans-serif;transition:color .2s;}
+.rec-nav-btn.active{color:var(--orange);}
+.rec-nav-btn .nav-icon{font-size:1.3rem;}
+
+/* REGION BADGE */
+.region-badge{display:inline-flex;align-items:center;gap:4px;background:#F0FFF8;color:#0A8A6A;border-radius:100px;padding:3px 9px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-left:5px;}
+
+/* JOB DETAIL PANEL */
+.detail-panel{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;background:rgba(0,0,0,.5);animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.detail-sheet{background:#1E2240;border-radius:24px 24px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:1.2rem 1.4rem 2.5rem;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.detail-close{display:flex;justify-content:center;margin-bottom:1.1rem;}
+.detail-close-bar{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;}
+.detail-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:1.2rem;}
+.detail-emoji{font-size:2.8rem;line-height:1;}
+.detail-sector-badge{display:inline-flex;background:var(--orange-pale);color:var(--orange);border-radius:100px;padding:3px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.4rem;}
+.detail-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;line-height:1.2;margin-bottom:.2rem;}
+.detail-company{font-size:.82rem;color:var(--gray);}
+.detail-block{margin-bottom:1.1rem;}
+.detail-block-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--orange-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;display:flex;align-items:center;gap:6px;}
+.detail-block-body{font-size:.83rem;color:rgba(255,255,255,.8);line-height:1.6;}
+.detail-tag-row{display:flex;flex-wrap:wrap;gap:6px;}
+.detail-tag{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:4px 12px;font-size:.76rem;color:var(--white);}
+.detail-evol-list{list-style:none;padding:0;}
+.detail-evol-list li{font-size:.82rem;color:rgba(255,255,255,.8);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:7px;}
+.detail-evol-list li::before{content:'→';color:var(--green);font-weight:700;}
+.detail-salary-box{background:rgba(0,180,166,.1);border:1px solid rgba(0,180,166,.2);border-radius:var(--radius-sm);padding:.8rem 1rem;font-size:.83rem;color:var(--orange-light);line-height:1.5;}
+.detail-ambiance-box{background:rgba(58,134,255,.07);border:1px solid rgba(58,134,255,.15);border-radius:var(--radius-sm);padding:.8rem 1rem;font-size:.83rem;color:#7EB8FF;line-height:1.5;}
+.btn-detail-like{width:100%;background:var(--green);color:var(--dark);font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;padding:14px;border-radius:100px;border:none;cursor:pointer;margin-top:.8rem;}
+.btn-detail-pass{width:100%;background:transparent;color:var(--gray);font-size:.88rem;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:100px;cursor:pointer;margin-top:.5rem;}
+
+/* ── MASCOTTE KELKO ── */
+.mascot-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.4rem 1rem .8rem;position:relative;margin-bottom:.8rem;}
+.mascot-glow{position:absolute;width:200px;height:200px;background:radial-gradient(circle,rgba(0,180,166,.22) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;border-radius:50%;}
+.mascot-img{width:110px;height:auto;filter:drop-shadow(0 8px 24px rgba(0,180,166,.35));animation:mascotFloat 3s ease-in-out infinite;position:relative;z-index:1;}
+@keyframes mascotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#mascot-fallback{position:relative;z-index:1;filter:drop-shadow(0 8px 24px rgba(0,180,166,.35));animation:mascotFloat 3s ease-in-out infinite;}
+.mascot-label{font-size:.82rem;font-weight:700;color:var(--white);margin-top:.6rem;position:relative;z-index:1;}
+.mascot-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(0,180,166,.2),rgba(123,111,255,.2));border:1px solid rgba(0,180,166,.35);border-radius:100px;padding:4px 12px;font-size:.72rem;font-weight:600;color:var(--orange-light);margin-top:.4rem;position:relative;z-index:1;}
+
+/* ── "VOIR D'AUTRES ÉCOLES" ── */
+.btn-other-schools{width:100%;background:transparent;border:1.5px solid rgba(0,180,166,.35);color:var(--orange-light);font-size:.82rem;font-weight:600;padding:10px 16px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:.4rem;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-other-schools:hover{background:rgba(0,180,166,.08);border-color:var(--orange);}
+.other-schools-panel{display:none;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-sm);padding:.9rem;margin-top:.6rem;animation:slideIn .3s ease;}
+.other-schools-panel.visible{display:block;}
+.other-school-item{display:flex;align-items:flex-start;gap:10px;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.other-school-item:last-child{border-bottom:none;}
+.osc-icon{width:32px;height:32px;border-radius:8px;background:rgba(0,180,166,.12);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.osc-name{font-size:.82rem;font-weight:600;color:var(--white);margin-bottom:2px;}
+.osc-type{font-size:.72rem;color:var(--orange-light);}
+.osc-dist{font-size:.7rem;color:var(--gray);margin-top:2px;}
+
+@media(max-width:480px){
+  .welcome-title{font-size:2.5rem;}
+  .card-stack{height:460px;}
+  .actors-row{flex-wrap:wrap;gap:8px;}
+  .actor-arrow{display:none;}
+  .input-row{grid-template-columns:1fr;}
+  .school-choice-row{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .role-cards{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ ÉCRAN LOGIN ══ -->
+<div id="screen-login" class="screen" style="display:flex;">
+  <div class="login-box">
+    <div class="login-logo">
+      <!-- Logo ak. Kelkun -->
+      <div style="display:flex;justify-content:center;margin-bottom:1.2rem;">
+        <div class="ak-logo-svg" style="width:80px;height:56px;display:flex;align-items:center;justify-content:center;background:var(--orange);border-radius:16px;padding:8px 12px;">
+          <svg viewBox="0 0 140 100" width="64" height="45" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF">
+            <path d="M38,82 C38,82 10,82 10,55 C10,28 28,18 42,18 C56,18 64,28 64,40 C64,52 56,58 48,58 C40,58 34,52 34,44 C34,36 40,32 46,34 C52,36 52,44 48,46" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <circle cx="38" cy="80" r="4" fill="#FFFFFF"/>
+            <path d="M75,18 L75,82 M75,50 L100,18 M75,50 L105,82" stroke="#FFFFFF" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="128" cy="82" r="7" fill="#FFFFFF"/>
+          </svg>
+        </div>
+      </div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);margin-bottom:.3rem;">KelkunMatch</h1>
+      <p style="color:var(--gray);font-size:.88rem;">La plateforme BTP & Artisanat qui connecte talents &amp; recruteurs</p>
+    </div>
+
+    <!-- Choix du rôle -->
+    <div id="login-role-step">
+      <div style="font-size:.78rem;color:var(--gray);text-align:center;margin-bottom:1rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">Je suis…</div>
+      <div class="role-cards">
+        <div class="role-card student" onclick="selectRole('student')">
+          <div class="role-card-icon">🎓</div>
+          <div class="role-card-title">Étudiant·e</div>
+          <div class="role-card-sub">Je cherche un stage, une alternance ou une formation</div>
+        </div>
+        <div class="role-card recruiter" onclick="selectRole('recruiter')">
+          <div class="role-card-icon">🏢</div>
+          <div class="role-card-title">Recruteur·se</div>
+          <div class="role-card-sub">Je publie des offres et trouve mes futurs talents</div>
+        </div>
+      </div>
+      <div class="demo-accounts">
+        <strong>Comptes de démo :</strong><br>
+        Étudiant·e : <strong>etudiant@demo.fr</strong> / <strong>demo123</strong><br>
+        Recruteur·se : <strong>recruteur@demo.fr</strong> / <strong>demo123</strong>
+      </div>
+    </div>
+
+    <!-- Formulaire étudiant -->
+    <div class="login-form" id="login-form-student">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.3rem;">
+        <button onclick="backToRoles()" style="background:rgba(255,255,255,.08);border:none;color:var(--white);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;">←</button>
+        <span style="font-family:'Syne',sans-serif;font-weight:700;">Connexion Étudiant·e 🎓</span>
+      </div>
+      <div class="login-field"><label>Email</label><input type="email" id="s-login-email" placeholder="etudiant@demo.fr" value="etudiant@demo.fr"></div>
+      <div class="login-field"><label>Mot de passe</label><input type="password" id="s-login-pwd" placeholder="••••••••" value="demo123"></div>
+      <button class="btn-login" onclick="loginStudent()">Connexion →</button>
+      <div class="login-divider">ou</div>
+      <button class="btn-login" style="background:rgba(255,255,255,.07);color:var(--white);" onclick="loginStudent()">🚀 Créer mon profil étudiant</button>
+      <div class="login-switch">Recruteur ? <a onclick="selectRole('recruiter')">Espace recruteur →</a></div>
+    </div>
+
+    <!-- Formulaire recruteur -->
+    <div class="login-form" id="login-form-recruiter">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.3rem;">
+        <button onclick="backToRoles()" style="background:rgba(255,255,255,.08);border:none;color:var(--white);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;">←</button>
+        <span style="font-family:'Syne',sans-serif;font-weight:700;">Connexion Recruteur·se 🏢</span>
+      </div>
+      <div class="login-field"><label>Email professionnel</label><input type="email" id="r-login-email" placeholder="recruteur@demo.fr" value="recruteur@demo.fr"></div>
+      <div class="login-field"><label>Mot de passe</label><input type="password" id="r-login-pwd" placeholder="••••••••" value="demo123"></div>
+      <div class="login-field"><label>Entreprise</label><input type="text" id="r-login-co" placeholder="Nom de votre entreprise" value="Groupe Legrand Normandie"></div>
+      <button class="btn-login blue" onclick="loginRecruiter()">Accéder à mon espace →</button>
+      <div class="login-switch">Étudiant·e ? <a onclick="selectRole('student')">Espace candidat →</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN 1 — ACCUEIL ÉTUDIANT ══ -->
+<div id="screen-welcome" class="screen">
+  <!-- Logo ak. accueil -->
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.8rem;position:relative;z-index:1;">
+    <div style="width:56px;height:56px;background:var(--orange);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg viewBox="0 0 140 100" width="42" height="30" xmlns="http://www.w3.org/2000/svg">
+        <path d="M38,82 C38,82 10,82 10,55 C10,28 28,18 42,18 C56,18 64,28 64,40 C64,52 56,58 48,58 C40,58 34,52 34,44 C34,36 40,32 46,34 C52,36 52,44 48,46" stroke="#FFFFFF" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="38" cy="80" r="4" fill="#FFFFFF"/>
+        <path d="M75,18 L75,82 M75,50 L100,18 M75,50 L105,82" stroke="#FFFFFF" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="128" cy="82" r="7" fill="#FFFFFF"/>
+      </svg>
+    </div>
+    <div style="text-align:left;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--white);line-height:1.1;">KelkunMatch</div>
+      <div style="font-size:.72rem;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;font-weight:600;">BTP &amp; Artisanat</div>
+    </div>
+  </div>
+  <h1 class="welcome-title">Trouve ton métier<span class="hl">dans le BTP</span></h1>
+  <p class="welcome-sub">Le point de rencontre entre toi, ton école et les artisans &amp; entreprises du bâtiment près de chez toi.</p>
+  <div class="actors-row">
+    <div class="actor-pill b">👤 Candidat</div>
+    <div class="actor-arrow">↔</div>
+    <div class="actor-pill c">🏢 Entreprise</div>
+    <div class="actor-arrow">+</div>
+    <div class="actor-pill a">🎓 Formation</div>
+  </div>
+  <button class="btn-main" onclick="showScreen('screen-form');goToStep(1);">🚀 Créer mon profil</button>
+  <div class="floating-tags" style="margin-top:2.2rem;">
+    <span class="tag">🧱 Maçonnerie</span><span class="tag">⚡ Électricité</span><span class="tag">🔩 Plomberie</span><span class="tag">🪵 Menuiserie</span>
+    <span class="tag">🏗 Charpente</span><span class="tag">🎨 Peinture Bâtiment</span><span class="tag">🏠 Couverture</span><span class="tag">🔧 Serrurerie</span>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN 2 — FORMULAIRE 5 ÉTAPES ══ -->
+<div id="screen-form" class="screen" style="flex-direction:column;">
+  <div id="form-inner">
+    <div class="form-header">
+      <div class="step-bar">
+        <div class="step-seg" id="seg1"></div><div class="step-seg" id="seg2"></div>
+        <div class="step-seg" id="seg3"></div><div class="step-seg" id="seg4"></div>
+        <div class="step-seg" id="seg5"></div>
+      </div>
+      <div class="form-title" id="form-title">Qui es-tu ?</div>
+      <div class="form-subtitle" id="form-sub">Infos de base pour ton profil</div>
+    </div>
+
+    <!-- ÉTAPE 1 — Identité -->
+    <div class="form-section" id="section-1">
+      <div class="input-row">
+        <div class="form-group"><label>Prénom</label><input type="text" id="f-prenom" placeholder="Léa"></div>
+        <div class="form-group"><label>Nom</label><input type="text" id="f-nom" placeholder="Martin"></div>
+      </div>
+      <div class="input-row">
+        <div class="form-group"><label>Email</label><input type="email" id="f-email" placeholder="lea@exemple.fr"></div>
+        <div class="form-group"><label>Téléphone</label><input type="tel" id="f-tel" placeholder="06 12 34 56 78"></div>
+      </div>
+      <div class="input-row">
+        <div class="form-group"><label>Âge</label><input type="number" id="f-age" placeholder="17" min="13" max="30"></div>
+        <div class="form-group"><label>Ville</label><input type="text" id="f-ville" placeholder="Rouen"></div>
+      </div>
+      <div class="form-nav"><button class="btn-next" onclick="goToStep(2)">Suivant →</button></div>
+    </div>
+
+    <!-- ÉTAPE 2 — École (oui/non) -->
+    <div class="form-section" id="section-2">
+      <div class="form-group">
+        <label>As-tu déjà une école ou un établissement ?</label>
+        <div class="school-choice-row">
+          <button class="school-choice-btn" id="btn-school-yes" onclick="setSchoolChoice(true)">
+            <span class="scb-icon">🎓</span>
+            <span class="scb-label">Oui, j'ai une école</span>
+          </button>
+          <button class="school-choice-btn" id="btn-school-no" onclick="setSchoolChoice(false)">
+            <span class="scb-icon">🔍</span>
+            <span class="scb-label">Non, je cherche une formation</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bloc affiché si OUI -->
+      <div id="school-yes-block" style="display:none;">
+        <div class="form-group">
+          <label>Nom de ton école / établissement</label>
+          <input type="text" id="f-ecole" placeholder="Ex : Lycée Gustave Flaubert, CFA des Métiers…">
+        </div>
+        <div class="form-group">
+          <label>Référent·e pédagogique (sera notifié·e des matchs)</label>
+          <div class="input-row">
+            <input type="text" id="f-ref-nom" placeholder="M. Dupont">
+            <input type="email" id="f-ref-email" placeholder="dupont@ecole.fr">
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc affiché si NON -->
+      <div id="school-no-block" style="display:none;">
+        <div class="notif-box" style="margin-bottom:0;">
+          🔍 <strong>Pas de souci !</strong> Continue ton profil, trouve un job qui te correspond, et au moment du match on te proposera des <strong>centres de formation partenaires</strong> près de chez toi selon le secteur choisi.
+        </div>
+        <input type="hidden" id="f-ecole" value="">
+        <input type="hidden" id="f-ref-nom" value="">
+        <input type="hidden" id="f-ref-email" value="">
+      </div>
+
+      <div class="form-group" style="margin-top:1.2rem;">
+        <label>Niveau d'études actuel</label>
+        <select id="f-niveau">
+          <option value="" disabled selected>Choisis ton niveau</option>
+          <option>3ème / Brevet</option><option>2nde Générale</option>
+          <option>2nde Professionnelle</option><option>1ère / Terminale</option>
+          <option>BAC Pro en cours</option><option>BTS / BUT en cours</option><option>Autre</option>
+        </select>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="goToStep(1)">← Retour</button>
+        <button class="btn-next" onclick="goToStep(3)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 — Zone géographique -->
+    <div class="form-section" id="section-3">
+      <div class="form-group">
+        <label>Ville de référence (point de départ)</label>
+        <input type="text" id="f-geo-ville" placeholder="Ex : Rouen">
+      </div>
+      <div class="form-group">
+        <label>Rayon de déplacement maximum</label>
+        <div class="geo-value"><span id="geo-display">25</span> <small>km</small></div>
+        <input type="range" class="geo-slider" min="5" max="150" step="5" value="25" id="geo-slider"
+          oninput="document.getElementById('geo-display').textContent=this.value;updateGeoFill(this)">
+        <div class="geo-labels"><span>5 km</span><span>50 km</span><span>100 km</span><span>150 km</span></div>
+      </div>
+      <div class="form-group">
+        <label>Moyen de transport</label>
+        <div class="chip-group">
+          <div class="chip" onclick="toggleChip(this)">🚌 Bus / Train</div>
+          <div class="chip" onclick="toggleChip(this)">🚲 Vélo</div>
+          <div class="chip" onclick="toggleChip(this)">🛵 Deux-roues</div>
+          <div class="chip" onclick="toggleChip(this)">🚗 Voiture</div>
+          <div class="chip" onclick="toggleChip(this)">🚶 À pied seulement</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Disponibilité</label>
+        <div class="chip-group">
+          <div class="chip" onclick="toggleChip(this)">📅 Stage court (1–2 sem.)</div>
+          <div class="chip" onclick="toggleChip(this)">📆 Stage long (1 mois+)</div>
+          <div class="chip" onclick="toggleChip(this)">🔄 Alternance hebdo</div>
+          <div class="chip" onclick="toggleChip(this)">🌞 Été uniquement</div>
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-back" onclick="goToStep(2)">← Retour</button>
+        <button class="btn-next" onclick="goToStep(4)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 — CV & Lettre -->
+    <div class="form-section" id="section-4">
+      <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('cv')">📄 Mon CV</button>
+        <button class="tab-btn" onclick="switchTab('lm')">✍️ Motivation</button>
+        <button class="tab-btn" onclick="switchTab('orient')" style="flex:1.3;position:relative;">🧭 Orientation IA<span style="position:absolute;top:-4px;right:4px;background:var(--orange);color:#fff;font-size:9px;font-weight:700;border-radius:100px;padding:1px 5px;">NEW</span></button>
+      </div>
+      <!-- CV -->
+      <div class="tab-pane visible" id="tab-cv">
+        <div class="upload-zone" id="cv-zone"
+          onclick="document.getElementById('cv-input').click()"
+          ondragover="handleDrag(event,'cv-zone')" ondragleave="handleDragLeave('cv-zone')" ondrop="handleDrop(event,'cv')">
+          <div class="upload-icon">📋</div>
+          <div class="upload-title">Dépose ou clique pour ajouter ton CV</div>
+          <div class="upload-sub">PDF, Word ou image — max 5 Mo</div>
+          <input type="file" id="cv-input" accept=".pdf,.doc,.docx,.jpg,.png" style="display:none" onchange="fileSelected(this,'cv')">
+        </div>
+        <div class="file-badge" id="cv-badge">
+          <span>✅</span><span id="cv-fname">—</span>
+          <button class="file-remove" onclick="removeFile('cv')">✕ Retirer</button>
+        </div>
+        <div style="margin-top:.8rem;">
+          <label>Ou décris-toi en quelques mots (si pas de CV)</label>
+          <textarea id="f-cv-text" style="height:90px;" placeholder="Ex : 3ème en fin d'année, passionné de mécanique. J'ai participé à un concours de robotique…"></textarea>
+        </div>
+      </div>
+      <!-- LM -->
+      <div class="tab-pane" id="tab-lm">
+        <div class="upload-zone" id="lm-zone"
+          onclick="document.getElementById('lm-input').click()"
+          ondragover="handleDrag(event,'lm-zone')" ondragleave="handleDragLeave('lm-zone')" ondrop="handleDrop(event,'lm')">
+          <div class="upload-icon">✉️</div>
+          <div class="upload-title">Dépose ta lettre de motivation</div>
+          <div class="upload-sub">PDF ou Word — max 5 Mo</div>
+          <input type="file" id="lm-input" accept=".pdf,.doc,.docx" style="display:none" onchange="fileSelected(this,'lm')">
+        </div>
+        <div class="file-badge" id="lm-badge">
+          <span>✅</span><span id="lm-fname">—</span>
+          <button class="file-remove" onclick="removeFile('lm')">✕ Retirer</button>
+        </div>
+        <div style="margin-top:.8rem;">
+          <label>Ou rédige ta lettre ici</label>
+          <textarea id="f-lm-text" style="height:130px;" placeholder="Madame, Monsieur,&#10;&#10;Actuellement en classe de… je suis à la recherche d'un stage dans le secteur…"></textarea>
+        </div>
+        <div style="margin-top:.9rem;">
+          <label>Ce qui me motive vraiment</label>
+          <div class="chip-group">
+            <div class="chip" onclick="toggleChip(this)">🤲 Travailler de mes mains</div>
+            <div class="chip" onclick="toggleChip(this)">💡 Créer &amp; innover</div>
+            <div class="chip" onclick="toggleChip(this)">🌍 Impact positif</div>
+            <div class="chip" onclick="toggleChip(this)">💰 Évolution de carrière</div>
+            <div class="chip" onclick="toggleChip(this)">👥 Ambiance d'équipe</div>
+            <div class="chip" onclick="toggleChip(this)">🎯 Autonomie</div>
+          </div>
+        </div>
+      </div>
+      <!-- ORIENTATION IA -->
+      <div class="tab-pane" id="tab-orient">
+
+        <!-- 🤖 MASCOTTE KELKUN — effet wow -->
+        <div class="mascot-hero">
+          <div class="mascot-glow"></div>
+          <img src="https://i.ibb.co/0jQyF3m/kelkun-robot.png"
+               onerror="this.style.display='none';document.getElementById('mascot-fallback').style.display='flex';"
+               id="mascot-img"
+               alt="Mascotte Kelkun IA"
+               class="mascot-img">
+          <!-- SVG fallback si l'image externe n'est pas accessible -->
+          <div id="mascot-fallback" style="display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 120 140" width="110" height="130" xmlns="http://www.w3.org/2000/svg">
+              <!-- Corps -->
+              <ellipse cx="60" cy="128" rx="30" ry="6" fill="rgba(0,180,166,.18)"/>
+              <!-- Torse -->
+              <rect x="30" y="72" width="60" height="52" rx="16" fill="#FFFFFF"/>
+              <!-- Lettre K sur le torse -->
+              <text x="60" y="105" text-anchor="middle" font-family="Arial" font-weight="900" font-size="22" fill="#1C2D5E">k</text>
+              <!-- Bras gauche -->
+              <rect x="14" y="76" width="16" height="36" rx="8" fill="#FFFFFF"/>
+              <!-- Bras droit -->
+              <rect x="90" y="76" width="16" height="36" rx="8" fill="#FFFFFF"/>
+              <!-- Tête -->
+              <rect x="22" y="18" width="76" height="62" rx="24" fill="#FFFFFF"/>
+              <!-- Écran tête navy -->
+              <rect x="30" y="26" width="60" height="44" rx="16" fill="#1C2D5E"/>
+              <!-- Oreilles -->
+              <rect x="16" y="34" width="10" height="18" rx="5" fill="#7B6FFF"/>
+              <rect x="94" y="34" width="10" height="18" rx="5" fill="#7B6FFF"/>
+              <!-- Yeux lumineux -->
+              <circle cx="44" cy="48" r="9" fill="#FFFFFF"/>
+              <circle cx="76" cy="48" r="9" fill="#FFFFFF"/>
+              <circle cx="44" cy="48" r="5" fill="#E8E0FF"/>
+              <circle cx="76" cy="48" r="5" fill="#E8E0FF"/>
+              <circle cx="44" cy="48" r="2.5" fill="#FFFFFF" opacity=".9"/>
+              <circle cx="76" cy="48" r="2.5" fill="#FFFFFF" opacity=".9"/>
+              <!-- Sourire -->
+              <path d="M48 63 Q60 72 72 63" stroke="#7B6FFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="mascot-label">Kelko, ton conseiller IA BTP</div>
+          <div class="mascot-badge">✨ Propulsé par l'IA</div>
+        </div>
+
+        <div class="orient-intro">
+          <strong>🧭 Tu ne sais pas encore quelle voie prendre dans le BTP ?</strong><br>
+          <strong>Kelko</strong> analyse ton profil et te pose quelques questions pour te suggérer les <strong>métiers BTP qui te correspondent</strong> et un <strong>centre de formation</strong> adapté près de chez toi.
+        </div>
+
+        <!-- Upload CV pour l'IA -->
+        <div class="orient-upload-row">
+          <label class="orient-upload-btn" onclick="document.getElementById('orient-cv-input').click()">
+            📎 Importer mon CV (optionnel)
+          </label>
+          <input type="file" id="orient-cv-input" accept=".pdf,.doc,.docx,.jpg,.png,.txt" style="display:none" onchange="orientCvSelected(this)">
+          <div class="orient-cv-badge" id="orient-cv-badge">✅ <span id="orient-cv-fname">—</span> <button onclick="removeOrientCv()" style="background:none;border:none;color:#4DFFCC;cursor:pointer;margin-left:4px;font-size:.75rem;">✕</button></div>
+        </div>
+
+        <!-- Zone de chat IA -->
+        <div class="orient-chat-wrap" id="orient-chat">
+          <div class="orient-msg ai">
+            <div class="orient-avatar ai" style="background:none;width:36px;height:36px;border-radius:50%;overflow:hidden;padding:2px;border:1.5px solid rgba(0,180,166,.4);">
+              <svg viewBox="0 0 120 140" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+                <rect x="30" y="72" width="60" height="52" rx="16" fill="#FFFFFF"/>
+                <text x="60" y="105" text-anchor="middle" font-family="Arial" font-weight="900" font-size="22" fill="#1C2D5E">k</text>
+                <rect x="22" y="18" width="76" height="62" rx="24" fill="#FFFFFF"/>
+                <rect x="30" y="26" width="60" height="44" rx="16" fill="#1C2D5E"/>
+                <circle cx="44" cy="48" r="8" fill="#FFFFFF"/><circle cx="76" cy="48" r="8" fill="#FFFFFF"/>
+                <circle cx="44" cy="48" r="4" fill="#E8E0FF"/><circle cx="76" cy="48" r="4" fill="#E8E0FF"/>
+                <path d="M48 63 Q60 72 72 63" stroke="#7B6FFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="orient-bubble">Bonjour ! Je suis <strong>Kelko</strong>, ton conseiller d'orientation IA spécialisé BTP. Clique sur <strong>« Démarrer le bilan »</strong> et je vais t'aider à trouver le métier BTP qui te correspond vraiment. Tu peux aussi importer ton CV pour que je l'analyse !</div>
+          </div>
+        </div>
+
+        <!-- Boutons de choix fermés -->
+        <div class="orient-choices" id="orient-choices"></div>
+
+        <!-- Bouton démarrer -->
+        <div class="orient-action-row">
+          <button class="btn-orient-start" id="btn-orient-start" onclick="startOrientationIA()">🚀 Démarrer le bilan</button>
+          <span class="orient-progress-lbl" id="orient-progress-lbl"></span>
+        </div>
+
+        <!-- Résultats de recommandation -->
+        <div class="orient-results" id="orient-results">
+          <div class="orient-results-title">🎯 Mes recommandations personnalisées</div>
+          <div id="orient-sectors-list"></div>
+          <button class="btn-next" style="width:100%;margin-top:.6rem;" onclick="applyOrientationToForm()">✅ Appliquer ces secteurs à mon profil →</button>
+        </div>
+      </div>
+
+      <div class="form-nav">
+        <button class="btn-back" onclick="goToStep(3)">← Retour</button>
+        <button class="btn-next" onclick="goToStep(5)">Suivant →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 5 — Secteurs & lancement -->
+    <div class="form-section" id="section-5">
+      <div class="form-group">
+        <label>Secteurs qui m'intéressent</label>
+        <div class="chip-group">
+          <div class="chip" onclick="toggleChip(this)">🧱 Maçonnerie &amp; Gros Œuvre</div>
+          <div class="chip" onclick="toggleChip(this)">⚡ Électricité du bâtiment</div>
+          <div class="chip" onclick="toggleChip(this)">🔩 Plomberie &amp; Chauffage</div>
+          <div class="chip" onclick="toggleChip(this)">🪵 Menuiserie &amp; Charpente</div>
+          <div class="chip" onclick="toggleChip(this)">🏠 Couverture &amp; Toiture</div>
+          <div class="chip" onclick="toggleChip(this)">🎨 Peinture en bâtiment</div>
+          <div class="chip" onclick="toggleChip(this)">🪨 Carrelage &amp; Sols</div>
+          <div class="chip" onclick="toggleChip(this)">🔧 Serrurerie &amp; Métallerie</div>
+          <div class="chip" onclick="toggleChip(this)">🚜 Conduite d'engins &amp; VRD</div>
+          <div class="chip" onclick="toggleChip(this)">🏛 Taille de pierre &amp; Façade</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Type de recherche</label>
+        <div class="chip-group">
+          <div class="chip" onclick="toggleChip(this)">🎓 Apprentissage / Alternance</div>
+          <div class="chip" onclick="toggleChip(this)">📋 Stage découverte</div>
+          <div class="chip" onclick="toggleChip(this)">💼 Stage obligatoire</div>
+          <div class="chip" onclick="toggleChip(this)">🔍 J'explore mes options</div>
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn-back" onclick="goToStep(4)">← Retour</button>
+        <button class="btn-next" onclick="startSwipe()">Lancer les matchs 🔥</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN 3 — SWIPE ══ -->
+<div id="screen-swipe" class="screen" style="flex-direction:column;">
+  <div class="swipe-inner">
+    <div class="profile-bar" id="profile-bar">
+      <div class="profile-avatar" id="profile-avatar">?</div>
+      <div style="flex:1;min-width:0;">
+        <div class="profile-name" id="profile-name">—</div>
+        <div class="profile-detail" id="profile-detail">—</div>
+      </div>
+      <div class="profile-geo" id="profile-geo">📍 —</div>
+    </div>
+    <div class="swipe-header">
+      <div><h2>MatchKelkun 🔥</h2><div class="swipe-meta" id="swipe-meta">Fiches dans ton rayon</div></div>
+      <div class="match-counter" id="match-counter">0 match</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="swipe-hint"><span>← Pas pour moi</span><span>C'est mon truc ! →</span></div>
+    <div class="card-stack" id="card-stack"></div>
+    <div class="swipe-actions">
+      <button class="action-btn action-nope" onclick="swipeLeft()" title="Passer">✕</button>
+      <button class="action-btn action-info" onclick="showInfo()" title="Infos">ℹ</button>
+      <button class="action-btn action-like" onclick="swipeRight()" title="J'aime !">♥</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN 4 — MATCH ══ -->
+<div id="screen-match" class="screen" style="flex-direction:column;align-items:center;overflow-y:auto;padding:2rem;">
+  <div class="confetti-wrap" id="confetti"></div>
+  <div class="match-content">
+    <div class="match-icon">🎉</div>
+    <h2 class="match-title">C'est un <span>MATCH</span> !</h2>
+    <p class="match-sub-txt" id="match-sub">Mise en relation en cours…</p>
+    <!-- Triangle 3 acteurs -->
+    <div class="tri-row">
+      <div class="tri-node">
+        <div class="tri-icon">👤</div>
+        <div class="tri-label">Candidat</div>
+        <div class="tri-val orange" id="tri-student">—</div>
+      </div>
+      <div class="tri-sep"></div>
+      <div class="tri-node">
+        <div class="tri-icon">🎓</div>
+        <div class="tri-label">École</div>
+        <div class="tri-val blue" id="tri-school">—</div>
+      </div>
+      <div class="tri-sep"></div>
+      <div class="tri-node">
+        <div class="tri-icon">🏢</div>
+        <div class="tri-label">Entreprise</div>
+        <div class="tri-val green" id="tri-company">—</div>
+      </div>
+    </div>
+    <div class="match-card">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:.7rem;">
+        <span style="font-size:2rem;" id="match-emoji">🔌</span>
+        <div>
+          <div class="match-job-name" id="match-job">—</div>
+          <div class="match-company-txt" id="match-co">—</div>
+          <div class="match-school-line">🎓 <span id="match-school-txt">—</span> · Référent·e notifié·e</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.75rem;color:#888;margin-bottom:.9rem;">
+        <span>📍</span><span id="match-loc">—</span>
+        <span style="margin-left:auto;font-size:.72rem;color:#4DFFCC;" id="match-dist">dans ton rayon ✓</span>
+      </div>
+      <div class="contact-info">
+        <div class="contact-row"><div class="contact-icon">📧</div><span id="match-email">—</span></div>
+        <div class="contact-row"><div class="contact-icon">📞</div><span id="match-phone">—</span></div>
+        <div class="contact-row"><div class="contact-icon">👤</div><span id="match-contact">—</span></div>
+      </div>
+    </div>
+    <div class="notif-box" id="match-notif-school">
+      🎓 <strong>Ton référent·e pédagogique</strong> sera automatiquement notifié·e de ce match. Il/Elle pourra valider et accompagner la mise en relation entre toi et l'entreprise.
+    </div>
+
+    <!-- Bloc centres de formation — affiché si pas d'école -->
+    <div class="training-section" id="training-section" style="display:none;">
+      <div class="training-title">🏫 Centre de formation recommandé</div>
+      <p style="font-size:.78rem;color:var(--gray);margin-bottom:.9rem;line-height:1.55;">Formation partenaire sélectionnée selon ton secteur BTP et ta localisation :</p>
+      <div id="training-list"></div>
+      <button class="btn-other-schools" onclick="toggleOtherSchools()">
+        🔍 Voir d'autres centres de formation
+      </button>
+      <div class="other-schools-panel" id="other-schools-panel"></div>
+      <button class="btn-training" onclick="contactTraining()">🏫 Me faire contacter par ce centre</button>
+    </div>
+
+    <button class="btn-contact" onclick="sendContact()">✉️ Envoyer mon profil à l'entreprise</button>
+    <button class="btn-continue" onclick="continueSwipe()">Continuer à swiper →</button>
+  </div>
+</div>
+
+<!-- ══ ÉCRAN 5 — FIN ══ -->
+<div id="screen-end" class="screen" style="flex-direction:column;align-items:center;overflow-y:auto;padding:2rem;">
+  <div class="end-content">
+    <div class="end-emoji" id="end-emoji">🎊</div>
+    <h2 class="match-title" style="font-size:2rem;" id="end-title">Bravo !</h2>
+    <p style="color:var(--gray);max-width:380px;text-align:center;margin:.7rem 0 .4rem;line-height:1.6;" id="end-sub"></p>
+    <p style="font-size:.78rem;color:#7EB8FF;margin-bottom:1.4rem;" id="end-school-notif"></p>
+    <div class="matches-list" id="matches-list"></div>
+    <p id="end-training-notif" style="font-size:.78rem;color:var(--accent);margin-bottom:1rem;text-align:center;display:none;">🏫 Des centres de formation ont été suggérés lors de tes matchs selon ton secteur et ta zone.</p>
+    <button class="btn-main" onclick="resetApp()">🔄 Recommencer</button>
+  </div>
+</div>
+
+<!-- ══ ÉCRANS RECRUTEUR ══ -->
+
+<!-- Dashboard recruteur -->
+<div id="screen-rec-dashboard" class="screen">
+  <div class="rec-topbar">
+    <div class="rec-topbar-logo">Match<span>Kelkun</span></div>
+    <div class="rec-topbar-user">
+      <div>
+        <div class="rec-user-name" id="rec-user-name">—</div>
+        <div class="rec-user-co" id="rec-user-co">—</div>
+      </div>
+      <div class="rec-avatar" id="rec-avatar">R</div>
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="rec-inner" style="flex:1;overflow-y:auto;">
+    <div class="rec-welcome" style="margin-top:.5rem;">
+      <h2 id="rec-welcome-msg">Bonjour ! 👋</h2>
+      <p>Gérez vos offres et découvrez vos candidats potentiels</p>
+    </div>
+
+    <!-- Bannière match -->
+    <div class="match-banner" id="rec-match-banner" style="display:none;">
+      <div class="match-banner-icon">🔔</div>
+      <div class="match-banner-txt">
+        <strong id="rec-banner-txt">Nouveaux matchs disponibles !</strong>
+        <span>Des candidats correspondent à vos offres — consultez-les maintenant</span>
+      </div>
+      <button class="btn-sm" onclick="recShowScreen('screen-rec-matches')">Voir →</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val orange" id="stat-offers">0</div>
+        <div class="stat-lbl">Offres publiées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val green" id="stat-matches">0</div>
+        <div class="stat-lbl">Matchs obtenus</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val blue" id="stat-views">0</div>
+        <div class="stat-lbl">Profils consultés</div>
+      </div>
+    </div>
+
+    <!-- Mes offres -->
+    <div class="section-hdr">
+      <h3>📋 Mes offres</h3>
+      <button class="btn-sm" onclick="recShowScreen('screen-rec-new-job')">+ Nouvelle offre</button>
+    </div>
+    <div class="job-offers-list" id="rec-offers-list">
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>Aucune offre publiée</h3>
+        <p style="font-size:.82rem;margin-bottom:1rem;">Créez votre première offre pour commencer à matcher avec des candidats.</p>
+        <button class="btn-sm" onclick="recShowScreen('screen-rec-new-job')">+ Créer une offre</button>
+      </div>
+    </div>
+
+    <!-- Candidats suggérés -->
+    <div class="section-hdr" style="margin-top:.5rem;">
+      <h3>⭐ Candidats suggérés</h3>
+      <button class="btn-sm ghost" onclick="recShowScreen('screen-rec-students')">Voir tous</button>
+    </div>
+    <div class="cand-grid" id="rec-suggested-candidates"></div>
+  </div>
+
+  <div class="rec-bottom-nav">
+    <button class="rec-nav-btn active" onclick="recShowScreen('screen-rec-dashboard');setRecNav(this)"><span class="nav-icon">🏠</span>Accueil</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-new-job');setRecNav(this)"><span class="nav-icon">➕</span>Nouvelle offre</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-matches');setRecNav(this)"><span class="nav-icon">💚</span>Matchs</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-students');setRecNav(this)"><span class="nav-icon">👥</span>Candidats</button>
+  </div>
+</div>
+
+<!-- Nouvelle offre -->
+<div id="screen-rec-new-job" class="screen">
+  <div class="rec-topbar">
+    <button class="btn-logout" onclick="recShowScreen('screen-rec-dashboard')" style="color:var(--white);">← Retour</button>
+    <div class="rec-topbar-logo">Nouvelle offre</div>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="rec-form-wrap" style="flex:1;overflow-y:auto;">
+    <div class="rec-form-title" style="margin-top:.5rem;">📝 Créer une fiche de poste</div>
+    <div class="rec-form-sub">Complétez les informations pour publier votre offre et commencer à matcher avec des candidats.</div>
+
+    <div class="form-group">
+      <label>Intitulé du poste *</label>
+      <input type="text" id="rj-title" placeholder="Ex : Électricien·ne en alternance">
+    </div>
+    <div class="input-row">
+      <div class="form-group">
+        <label>Secteur d'activité *</label>
+        <select id="rj-sector">
+          <option value="" disabled selected>Choisir</option>
+          <option>🧱 Maçonnerie &amp; Gros Œuvre</option>
+          <option>⚡ Électricité du bâtiment</option>
+          <option>🔩 Plomberie &amp; Chauffage</option>
+          <option>🪵 Menuiserie &amp; Charpente</option>
+          <option>🏠 Couverture &amp; Toiture</option>
+          <option>🎨 Peinture en bâtiment</option>
+          <option>🪨 Carrelage &amp; Sols</option>
+          <option>🔧 Serrurerie &amp; Métallerie</option>
+          <option>🚜 Conduite d'engins &amp; VRD</option>
+          <option>🏛 Taille de pierre &amp; Façade</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Type de contrat *</label>
+        <select id="rj-type">
+          <option value="" disabled selected>Choisir</option>
+          <option>Alternance</option>
+          <option>Stage découverte</option>
+          <option>Stage obligatoire</option>
+          <option>Apprentissage / CAP</option>
+          <option>CDD</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="form-group">
+        <label>Ville / Localisation *</label>
+        <input type="text" id="rj-geo" placeholder="Ex : Rouen (76)">
+      </div>
+      <div class="form-group">
+        <label>Rémunération mensuelle</label>
+        <input type="text" id="rj-salary" placeholder="Ex : 1 800–2 400 €/mois">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description du poste *</label>
+      <textarea id="rj-desc" style="height:110px;" placeholder="Décrivez les missions, l'environnement de travail, les attentes…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Profil recherché</label>
+      <div class="chip-group" id="rj-skills-chips">
+        <div class="chip" onclick="toggleChip(this)">💪 Motivation</div>
+        <div class="chip" onclick="toggleChip(this)">🤲 Manuel·le</div>
+        <div class="chip" onclick="toggleChip(this)">💡 Créatif·ve</div>
+        <div class="chip" onclick="toggleChip(this)">👥 Esprit équipe</div>
+        <div class="chip" onclick="toggleChip(this)">🎯 Autonome</div>
+        <div class="chip" onclick="toggleChip(this)">📱 À l'aise avec le digital</div>
+        <div class="chip" onclick="toggleChip(this)">🌍 Sensibilité environnementale</div>
+        <div class="chip" onclick="toggleChip(this)">🤝 Sens du relationnel</div>
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="form-group">
+        <label>Niveau d'études souhaité</label>
+        <select id="rj-niveau">
+          <option value="">Peu importe</option>
+          <option>3ème / Brevet</option>
+          <option>2nde / 1ère</option>
+          <option>BAC / BAC Pro</option>
+          <option>BTS / BUT</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rayon d'acceptation (km)</label>
+        <input type="number" id="rj-radius" placeholder="50" min="5" max="200" value="50">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Contact RH (email)</label>
+      <input type="email" id="rj-email" placeholder="rh@votreentreprise.fr">
+    </div>
+    <div class="form-group">
+      <label>Contact RH (téléphone)</label>
+      <input type="tel" id="rj-phone" placeholder="02 35 XX XX XX">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:1.2rem;padding-bottom:3rem;">
+      <button class="btn-sm ghost" onclick="recShowScreen('screen-rec-dashboard')" style="padding:13px 22px;">Annuler</button>
+      <button class="btn-sm" style="flex:1;font-size:.95rem;padding:13px;" onclick="publishJob()">🚀 Publier l'offre</button>
+    </div>
+  </div>
+</div>
+
+<!-- Matchs recruteur -->
+<div id="screen-rec-matches" class="screen">
+  <div class="rec-topbar">
+    <div class="rec-topbar-logo">Match<span>Kelkun</span></div>
+    <span style="font-size:.85rem;color:var(--gray);">Mes matchs</span>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="rec-inner" style="flex:1;overflow-y:auto;">
+    <div style="margin-bottom:1.2rem;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.2rem;">💚 Mes matchs</div>
+      <div style="font-size:.82rem;color:var(--gray);">Candidats qui ont liké votre offre</div>
+    </div>
+    <div id="rec-matches-list"></div>
+  </div>
+  <div class="rec-bottom-nav">
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-dashboard');setRecNav(this)"><span class="nav-icon">🏠</span>Accueil</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-new-job');setRecNav(this)"><span class="nav-icon">➕</span>Nouvelle offre</button>
+    <button class="rec-nav-btn active" onclick="recShowScreen('screen-rec-matches');setRecNav(this)"><span class="nav-icon">💚</span>Matchs</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-students');setRecNav(this)"><span class="nav-icon">👥</span>Candidats</button>
+  </div>
+</div>
+
+<!-- Candidats recruteur -->
+<div id="screen-rec-students" class="screen">
+  <div class="rec-topbar">
+    <div class="rec-topbar-logo">Match<span>Kelkun</span></div>
+    <span style="font-size:.85rem;color:var(--gray);">Candidats</span>
+    <div style="width:80px;"></div>
+  </div>
+  <div class="rec-inner" style="flex:1;overflow-y:auto;">
+    <div style="margin-bottom:1rem;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.2rem;">👥 Tous les candidats</div>
+      <div style="font-size:.82rem;color:var(--gray);">Parcourez les profils disponibles sur la plateforme</div>
+    </div>
+    <div class="filter-bar" id="rec-filter-bar">
+      <div class="filter-chip active" onclick="filterCandidates('all',this)">Tous</div>
+      <div class="filter-chip" onclick="filterCandidates('Maçonnerie',this)">🧱 Maçon</div>
+      <div class="filter-chip" onclick="filterCandidates('Électricité',this)">⚡ Électricien</div>
+      <div class="filter-chip" onclick="filterCandidates('Plomberie',this)">🔩 Plombier</div>
+      <div class="filter-chip" onclick="filterCandidates('Menuiserie',this)">🪵 Menuisier</div>
+      <div class="filter-chip" onclick="filterCandidates('Couverture',this)">🏠 Couvreur</div>
+      <div class="filter-chip" onclick="filterCandidates('Peinture',this)">🎨 Peintre</div>
+    </div>
+    <div class="cand-grid" id="rec-all-candidates"></div>
+  </div>
+  <div class="rec-bottom-nav">
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-dashboard');setRecNav(this)"><span class="nav-icon">🏠</span>Accueil</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-new-job');setRecNav(this)"><span class="nav-icon">➕</span>Nouvelle offre</button>
+    <button class="rec-nav-btn" onclick="recShowScreen('screen-rec-matches');setRecNav(this)"><span class="nav-icon">💚</span>Matchs</button>
+    <button class="rec-nav-btn active" onclick="recShowScreen('screen-rec-students');setRecNav(this)"><span class="nav-icon">👥</span>Candidats</button>
+  </div>
+</div>
+
+<script>
+/* ── DONNÉES BTP & ARTISANAT ── */
+const JOBS=[
+  /* ── OCCITANIE ── */
+  {emoji:"🧱",sector:"Maçonnerie & Gros Œuvre",region:"Occitanie",title:"Maçon·ne Gros Œuvre",company:"Vinci Construction Toulouse",contact_name:"Karim Messaoudi (Chef chantier)",tags:["Terrain","Physique","Avenir"],geo:"Toulouse (31)",dist:8,desc:"Réalise les fondations, murs porteurs, dalles et coffrages sur des chantiers résidentiels et tertiaires. Métier incontournable du BTP, toujours en forte demande.",salary:"1 900–3 200 €/mois",type:"CAP / Alternance",school:"",contact:{email:"rh@vinci-toulouse.fr",phone:"05 61 XX XX 01"},
+    detail:{
+      journee:"Départ du dépôt à 7h. Lecture de plans avec le chef, préparation du mortier, montage de murs en parpaings ou briques, pose de coffrages. Fin de journée à 16h30, nettoyage du chantier.",
+      competences:["Lecture de plans d'exécution","Travail du béton, mortier, enduit","Maîtrise du niveau et fil à plomb","Travail en sécurité chantier (EPI)"],
+      evolutions:["Chef d'équipe maçonnerie","Chef de chantier","Conducteur de travaux","Création d'une entreprise du BTP"],
+      formations:["CAP Maçonnerie (2 ans)","Bac Pro Technicien du Bâtiment (3 ans)","BP Maçon (2 ans après CAP)","BTS Bâtiment (2 ans)"],
+      salaire_debut:"1 500–1 800 €/mois (alternance) → 2 500–4 500 € chef de chantier",
+      ambiance:"Équipe de 4–15 personnes, dehors par tous les temps, ambiance de chantier solide et soudée."
+    }
+  },
+  {emoji:"⚡",sector:"Électricité du bâtiment",region:"Occitanie",title:"Électricien·ne du bâtiment",company:"Eiffage Énergie Toulouse",contact_name:"Sophie Renard (RH)",tags:["Technique","Sécurité","Avenir"],geo:"Toulouse (31)",dist:5,desc:"Installe et maintient les installations électriques dans les logements, bureaux et bâtiments industriels. Secteur en forte croissance avec la rénovation énergétique et la domotique.",salary:"1 800–2 900 €/mois",type:"CAP / Bac Pro Alternance",school:"",contact:{email:"rh@eiffage-toulouse.fr",phone:"05 61 XX XX 02"},
+    detail:{
+      journee:"Prise de matériel au dépôt, départ sur chantier à 8h. Pose de câbles, tableaux électriques, prises, luminaires. Habilitations électriques obligatoires. L'après-midi : tests et mise en service.",
+      competences:["Habilitations électriques B1V/BR","Lecture de schémas électriques","Pose de câbles et appareillages","Travail en sécurité hauteur + électricité"],
+      evolutions:["Chef d'équipe électricité","Chargé d'affaires","Responsable technique","Création d'entreprise artisanale"],
+      formations:["CAP Électricien (2 ans)","Bac Pro MELEC (3 ans)","BTS Électrotechnique (2 ans)","Mention complémentaire domotique"],
+      salaire_debut:"1 400–1 700 €/mois (alternance) → 2 300–3 500 € confirmé",
+      ambiance:"Souvent en binôme ou petite équipe, chantiers variés, autonomie progressive."
+    }
+  },
+  {emoji:"🔩",sector:"Plomberie & Chauffage",region:"Occitanie",title:"Plombier·ère Chauffagiste",company:"Sanit'Pro Toulouse",contact_name:"Marc Taurines (Gérant)",tags:["Manuel","Dépannage","Clientèle"],geo:"Montpellier (34)",dist:15,desc:"Installe et entretient les réseaux d'eau, de gaz et les systèmes de chauffage. Dépannage d'urgence possible 24h/24. Métier très recherché, bons revenus.",salary:"1 800–3 000 €/mois",type:"CAP / BP Alternance",school:"",contact:{email:"contact@sanitpro.fr",phone:"04 67 XX XX 03"},
+    detail:{
+      journee:"Planification des interventions, départ chez les clients ou sur chantier. Soudure, raccordement tuyauteries cuivre et PER, installation robinetteries, réparation fuites. Contact client direct.",
+      competences:["Soudure brasure et emboîture","Lecture de plans sanitaires","Réglage chaudières et pompes","Relation client et diagnostic"],
+      evolutions:["Plombier chauffagiste confirmé","Spécialiste PAC / pompes à chaleur","Chef d'équipe","Création de son entreprise"],
+      formations:["CAP Installateur Sanitaire (2 ans)","CAP Installateur Thermique (2 ans)","BP Monteur Dépanneur Gaz","Bac Pro TISEC"],
+      salaire_debut:"1 400–1 700 €/mois (apprentissage) → 2 200–3 500 € expérimenté",
+      ambiance:"Travail seul ou en binôme, déplacements chez les particuliers et sur chantiers neuf."
+    }
+  },
+  /* ── PACA ── */
+  {emoji:"🏠",sector:"Couverture & Toiture",region:"PACA",title:"Couvreur·euse – Zingueur·euse",company:"Toits du Sud Marseille",contact_name:"Robert Barelli (Chef d'équipe)",tags:["Hauteur","Précision","Artisanat"],geo:"Marseille (13)",dist:10,desc:"Pose et rénove les toitures en tuiles, ardoises, bac acier. Maîtrise de la zinguerie (gouttières, cheneaux, solins). Travail en hauteur avec harnais. Vrai artisanat.",salary:"1 900–3 000 €/mois",type:"CAP / Alternance",school:"",contact:{email:"rh@toitsdusud.fr",phone:"04 91 XX XX 04"},
+    detail:{
+      journee:"Départ en équipe de 3 à 7h30. Montage des échafaudages, dépose de l'ancienne couverture, pose des lattes et contre-lattes, pose des tuiles canal ou mécaniques. Zinguerie l'après-midi.",
+      competences:["Travail en hauteur (CACES nacelle)","Pose de tuiles, ardoises, bac acier","Zinguerie et étanchéité","Lecture de plans de toiture"],
+      evolutions:["Chef d'équipe couverture","Couvreur zingueur spécialisé monument","Conducteur de travaux","Création d'entreprise couverture"],
+      formations:["CAP Couvreur (2 ans)","BP Couvreur (2 ans après CAP)","Bac Pro Technicien du Bâtiment option B"],
+      salaire_debut:"1 500–1 800 €/mois (alternance) → 2 500–3 800 € chef d'équipe",
+      ambiance:"Équipe soudée, travail physique en extérieur, views panoramiques garanties !"
+    }
+  },
+  {emoji:"🪨",sector:"Carrelage & Sols",region:"PACA",title:"Carreleur·euse – Solier·ère",company:"Sol & Style Nice",contact_name:"Amina Kessouri (Gérante)",tags:["Précision","Esthétique","Artisanat"],geo:"Nice (06)",dist:7,desc:"Pose de carrelage, faïence, pierre naturelle dans les logements et locaux commerciaux. Métier alliant technique et sens artistique. Travaux de rénovation en forte hausse.",salary:"1 700–2 800 €/mois",type:"CAP / Alternance",school:"",contact:{email:"contact@sol-style.fr",phone:"04 93 XX XX 05"},
+    detail:{
+      journee:"Préparation du support (ragréage, imperméabilisation), traçage des calepinages, coupe et pose des carreaux au mortier colle, réalisation des joints. Finitions et nettoyage.",
+      competences:["Lecture de plans et calepinage","Pose mortier-colle et joints","Coupe de carreaux (meuleuse, carrelette)","Waterproofing salle de bains"],
+      evolutions:["Carreleur confirmé (marbre, mosaïque)","Chef d'équipe sols","Poseur de pierres naturelles spécialisé","Création d'entreprise artisanale"],
+      formations:["CAP Carrelage Mosaïque (2 ans)","BP Carreleur Mosaïste (2 ans après CAP)","Bac Pro Aménagement Finition"],
+      salaire_debut:"1 400–1 700 €/mois (apprentissage) → 2 200–3 200 € confirmé",
+      ambiance:"Travail seul ou en binôme, chantiers variés (neuf, rénovation, luxe), résultats visuels immédiats."
+    }
+  },
+  {emoji:"🎨",sector:"Peinture en bâtiment",region:"PACA",title:"Peintre en bâtiment",company:"Décor & Rénov Aix",contact_name:"Stéphane Mouton (Chef équipe)",tags:["Finition","Couleurs","Polyvalence"],geo:"Aix-en-Provence (13)",dist:12,desc:"Prépare les surfaces et applique peintures, enduits décoratifs, revêtements muraux. Du blanc au trompe-l'œil, vaste palette de techniques. Très forte demande en rénovation.",salary:"1 700–2 700 €/mois",type:"CAP / Alternance",school:"",contact:{email:"rh@decor-renov.fr",phone:"04 42 XX XX 06"},
+    detail:{
+      journee:"Protection du chantier, ponçage et rebouchage, impression des supports, application peinture rouleau/pistolet. Pose de papiers peints, enduits texturés. Nettoyage en fin de chantier.",
+      competences:["Préparation et rebouchage des supports","Application peinture et enduits","Pose de revêtements muraux","Connaissance des produits et dilutions"],
+      evolutions:["Peintre décorateur spécialisé","Chef d'équipe peinture","Applicateur revêtements de sol","Création d'entreprise peinture"],
+      formations:["CAP Peintre Applicateur de Revêtements (2 ans)","Bac Pro Aménagement et Finition (3 ans)","BP Peintre (2 ans après CAP)"],
+      salaire_debut:"1 400–1 650 €/mois (alternance) → 2 200–3 000 € confirmé",
+      ambiance:"Équipe de 2–5 peintres, chantiers variés logements et locaux, résultats visuels très gratifiants."
+    }
+  },
+  /* ── IDF ── */
+  {emoji:"🪵",sector:"Menuiserie & Charpente",region:"IDF",title:"Menuisier·ère Poseur·euse",company:"Menuiseries Lebrun – Paris",contact_name:"Laurent Garnier (Responsable ateliers)",tags:["Bois","Précision","Créatif"],geo:"Paris (75)",dist:6,desc:"Fabrique et pose fenêtres, portes, placards, escaliers en bois, PVC ou aluminium. Travail en atelier et sur chantier. Métier alliant technique fine et sens esthétique.",salary:"1 800–3 000 €/mois",type:"CAP / Bac Pro Alternance",school:"",contact:{email:"rh@menuiseries-lebrun.fr",phone:"01 42 XX XX 07"},
+    detail:{
+      journee:"Matin en atelier : débit, usinage et assemblage sur machines à bois. Après-midi sur chantier : pose de fenêtres ou placards sur mesure, réglages et finitions. Lecture de plans systématique.",
+      competences:["Machines à bois (dégauchisseuse, toupie)","Lecture de plans et métrés","Techniques d'assemblage (tenon-mortaise, tourillons)","Pose et réglages chantier"],
+      evolutions:["Menuisier confirmé / compagnon","Charpentier·ère bois","Chef d'atelier","Création d'entreprise menuiserie"],
+      formations:["CAP Menuisier Installateur (2 ans)","CAP Menuisier Fabricant (2 ans)","Bac Pro Technicien Menuisier Agenceur (3 ans)","Tour de France des Compagnons"],
+      salaire_debut:"1 400–1 700 €/mois (apprentissage) → 2 500–4 000 € compagnon confirmé",
+      ambiance:"Atelier chaleureux, odeur du bois, équipe de 3–15 personnes, grande fierté du travail bien fait."
+    }
+  },
+  {emoji:"🔧",sector:"Serrurerie & Métallerie",region:"IDF",title:"Serrurier·ère Métallier·ère",company:"Acier & Construction Paris",contact_name:"Pierre Fontaine (Gérant)",tags:["Métal","Fabrication","Technique"],geo:"Seine-Saint-Denis (93)",dist:9,desc:"Fabrique et installe des ouvrages métalliques : portes, portails, garde-corps, escaliers en acier, structures métalliques. Travail d'atelier de précision et pose chantier.",salary:"1 800–3 000 €/mois",type:"CAP / Alternance",school:"",contact:{email:"rh@acier-construction.fr",phone:"01 48 XX XX 08"},
+    detail:{
+      journee:"Atelier : traçage sur métal, découpe plasma ou scie, soudure MIG/TIG, meulage, assemblage. Chantier : pose et fixation des ouvrages, joints et finitions.",
+      competences:["Soudure MIG/TIG","Lecture de plans techniques","Découpe et formage du métal","Travail en hauteur (garde-corps, escaliers)"],
+      evolutions:["Métallier confirmé / compagnon","Chaudronnier industriel","Responsable atelier","Création d'une metallerie"],
+      formations:["CAP Serrurier Métallier (2 ans)","Bac Pro Technicien Constructeur Bois & Métal","BM Métallier (Brevet de Maîtrise)","Tour de France des Compagnons"],
+      salaire_debut:"1 450–1 750 €/mois (apprentissage) → 2 500–4 000 € compagnon",
+      ambiance:"Atelier de 5–20 personnes, matière noble, diversité des ouvrages (portails, verrières, escaliers)."
+    }
+  },
+  /* ── AURA ── */
+  {emoji:"🏗",sector:"Conduite d'engins & VRD",region:"AURA",title:"Conducteur·trice d'engins de chantier",company:"NGE Terrassement Lyon",contact_name:"Pascal Vidal (Chef de parc)",tags:["Engins","Terrain","Responsabilité"],geo:"Lyon (69)",dist:14,desc:"Conduit et manœuvre les engins de terrassement (pelle, bulldozer, compacteur) sur chantiers de VRD, routes et bâtiment. Métier technique et recherché, CACES obligatoires.",salary:"2 000–3 400 €/mois",type:"CAP / Titre Pro CACES",school:"",contact:{email:"rh@nge-lyon.fr",phone:"04 72 XX XX 09"},
+    detail:{
+      journee:"Prise de poste 7h, vérification de l'engin (niveaux, pneumatiques, sécurités). Terrassement, nivellement, compactage selon les plans de géomètre. Coordination avec les équipes VRD.",
+      competences:["CACES R482 catégorie A, B1, C1","Lecture de plans topographiques","Entretien courant des engins","Communication radio chantier"],
+      evolutions:["Conducteur d'engins confirmé","Chef de chantier VRD","Conducteur de travaux TP","Grutier·ère (CACES R487)"],
+      formations:["CAP Conducteur d'Engins de Travaux Publics","Titre Professionnel Conducteur d'Engins","Bac Pro TFCA (Travaux de Fondations et Canalisations)"],
+      salaire_debut:"1 700–2 000 €/mois (alternance) → 2 800–4 500 € confirmé + primes chantier",
+      ambiance:"Extérieur, engins imposants, grande responsabilité, équipe de terrassement solidaire."
+    }
+  },
+  {emoji:"🏛",sector:"Taille de pierre & Façade",region:"AURA",title:"Tailleur·euse de pierre – Façadier·ère",company:"Pierre & Patrimoine Grenoble",contact_name:"Julien Martel (Maître artisan)",tags:["Artisanat","Patrimoine","Précision"],geo:"Grenoble (38)",dist:18,desc:"Taille, sculpte et pose des pierres naturelles pour la construction et la restauration du patrimoine. Façadier : nettoie, répare et ravale les façades. Deux métiers d'exception rares et valorisés.",salary:"1 900–3 200 €/mois",type:"CAP / Compagnons",school:"",contact:{email:"contact@pierre-patrimoine.fr",phone:"04 76 XX XX 10"},
+    detail:{
+      journee:"Atelier le matin : traçage, taille à l'outil ou jet d'eau, sculpture sur commande. Chantier l'après-midi : pose de pierres taillées sur monument historique ou bâtiment neuf. Travail sur échafaudage.",
+      competences:["Taille manuelle et mécanique de la pierre","Lecture de plans d'architecte","Techniques de restauration patrimoine","Travail sur échafaudage (hauteur)"],
+      evolutions:["Tailleur de pierre confirmé / compagnon","Restaurateur du patrimoine","Chef de chantier monuments historiques","Création d'une entreprise artisanale"],
+      formations:["CAP Tailleur de Pierre (2 ans)","CAP Façadier Peintre (2 ans)","Brevet des Métiers d'Art Tailleur de Pierre","Tour de France des Compagnons"],
+      salaire_debut:"1 500–1 900 €/mois (apprentissage) → 2 800–5 000 € compagnon du devoir",
+      ambiance:"Atelier de 2–8 artisans, chantiers remarquables (cathédrales, châteaux), fierté du patrimoine conservé."
+    }
+  }
+];
+
+/* ── CENTRES DE FORMATION BTP (par secteur) — 1 par secteur, le plus pertinent ── */
+const TRAINING_CENTERS={
+  "Maçonnerie & Gros Œuvre":[
+    {name:"CCCA-BTP Occitanie",type:"CAP Maçonnerie / BP Maçon",dist:8,details:"Centre de référence BTP Occitanie, taux d'insertion >88%, partenaires Vinci, Bouygues, Eiffage.",phone:"05 61 XX XX T1",email:"occitanie@ccca-btp.fr"}
+  ],
+  "Électricité du bâtiment":[
+    {name:"CFA Bâtiment & Énergie Toulouse",type:"CAP Électricien / Bac Pro MELEC",dist:6,details:"Spécialité énergies renouvelables et domotique, alternance avec entreprises du 31.",phone:"05 61 XX XX T2",email:"contact@cfa-batiment31.fr"}
+  ],
+  "Plomberie & Chauffage":[
+    {name:"AFPA Montpellier BTP",type:"CAP Installateur Sanitaire / BP Gaz",dist:9,details:"Formations certifiantes finançables CPF, ateliers techniques équipés neuf.",phone:"04 67 XX XX T3",email:"montpellier@afpa.fr"}
+  ],
+  "Couverture & Toiture":[
+    {name:"CCCA-BTP PACA – Marseille",type:"CAP Couvreur / BP Couvreur",dist:11,details:"Réseau national CCCA, ateliers couverts réels, taux d'emploi >90% à 6 mois.",phone:"04 91 XX XX T4",email:"paca@ccca-btp.fr"}
+  ],
+  "Carrelage & Sols":[
+    {name:"CFA Métiers du Bâtiment Nice",type:"CAP Carrelage Mosaïque / Bac Pro Aménagement",dist:7,details:"Atelier carrelage complet, stages en entreprises du 06, réseau régional PACA.",phone:"04 93 XX XX T5",email:"contact@cfa-metiers06.fr"}
+  ],
+  "Peinture en bâtiment":[
+    {name:"AFPA Aix-en-Provence BTP",type:"CAP Peintre Applicateur / Bac Pro AF",dist:12,details:"Formation peinture intérieure et façade, chantiers école, finançable OPCO ou CPF.",phone:"04 42 XX XX T6",email:"aix@afpa.fr"}
+  ],
+  "Menuiserie & Charpente":[
+    {name:"CFA Compagnons du Devoir Paris",type:"CAP Menuisier / Tour de France",dist:5,details:"Formation d'excellence, réseau national des Compagnons, hébergement en maison de compagnons.",phone:"01 44 XX XX T7",email:"paris@compagnons-du-devoir.fr"}
+  ],
+  "Serrurerie & Métallerie":[
+    {name:"AFPA Seine-Saint-Denis Métallerie",type:"CAP Serrurier Métallier / BM",dist:7,details:"Ateliers soudure MIG/TIG, plasma, commande numérique. Financement OPCO disponible.",phone:"01 48 XX XX T8",email:"93@afpa.fr"}
+  ],
+  "Conduite d'engins & VRD":[
+    {name:"CFA TP Auvergne-Rhône-Alpes",type:"CAP Conducteur d'Engins TP / CACES R482",dist:10,details:"Le seul CFA TP de la région, engins réels de chantier, partenaires NGE, Colas, Eurovia.",phone:"04 72 XX XX T9",email:"aura@cfa-tp.fr"}
+  ],
+  "Taille de pierre & Façade":[
+    {name:"Compagnons du Devoir Grenoble",type:"CAP Tailleur de Pierre / BMA",dist:8,details:"Formation artisanale d'exception, chantiers monuments historiques, réseau national.",phone:"04 76 XX XX T10",email:"grenoble@compagnons-du-devoir.fr"}
+  ]
+};
+
+/* ── ÉCOLES PARTENAIRES BTP — algo de matching (secteur + région + niveau) ── */
+const BTP_SCHOOLS=[
+  // Occitanie
+  {name:"Lycée Pro Gustave Courbet – Toulouse",city:"Toulouse",region:"Occitanie",sectors:["Maçonnerie","Électricité","Plomberie"],niveaux:["3ème","2nde","Terminale","BAC"],contact:"dir.lpgc@ac-toulouse.fr"},
+  {name:"CFA BTP Occitanie – Montpellier",city:"Montpellier",region:"Occitanie",sectors:["Maçonnerie","Couverture","Carrelage","Peinture"],niveaux:["3ème","2nde","BAC","BTS"],contact:"contact@cfa-btp-occitanie.fr"},
+  // PACA
+  {name:"CCCA-BTP PACA – Marseille",city:"Marseille",region:"PACA",sectors:["Maçonnerie","Couverture","Électricité","Plomberie"],niveaux:["3ème","2nde","Terminale","BAC"],contact:"paca@ccca-btp.fr"},
+  {name:"Lycée des Métiers du BTP – Nice",city:"Nice",region:"PACA",sectors:["Carrelage","Peinture","Menuiserie","Serrurerie"],niveaux:["3ème","2nde","Terminale","BAC"],contact:"contact@lm-btp06.fr"},
+  // IDF
+  {name:"Compagnons du Devoir – Paris",city:"Paris",region:"IDF",sectors:["Menuiserie","Serrurerie","Taille de pierre"],niveaux:["3ème","2nde","BAC","BTS"],contact:"paris@compagnons-du-devoir.fr"},
+  {name:"AFPA Paris Île-de-France BTP",city:"Paris",region:"IDF",sectors:["Électricité","Plomberie","Maçonnerie","Peinture"],niveaux:["BAC","BTS","Autre"],contact:"idf@afpa.fr"},
+  // AURA
+  {name:"CFA TP Auvergne-Rhône-Alpes",city:"Lyon",region:"AURA",sectors:["Conduite d'engins","Maçonnerie","Plomberie"],niveaux:["3ème","2nde","BAC"],contact:"aura@cfa-tp.fr"},
+  {name:"Compagnons du Devoir – Grenoble",city:"Grenoble",region:"AURA",sectors:["Taille de pierre","Menuiserie","Serrurerie"],niveaux:["3ème","2nde","BAC","BTS"],contact:"grenoble@compagnons-du-devoir.fr"},
+];
+
+/* ── FONCTION : trouver L'école la plus pertinente ── */
+function findBestSchool(job, student){
+  const sector = job.sector;
+  const niveau = student.niveau||'';
+  const ville  = (student.ville||'').toLowerCase();
+
+  // Score de pertinence : secteur (4pts) + région match (3pts) + niveau (2pts)
+  const scored = BTP_SCHOOLS.map(s=>{
+    let score=0;
+    if(s.sectors.some(sec=>sector.toLowerCase().includes(sec.toLowerCase())||sec.toLowerCase().includes(sector.toLowerCase())))score+=4;
+    if(job.region&&s.region===job.region)score+=3;
+    else if(ville&&s.city.toLowerCase().includes(ville))score+=3;
+    if(s.niveaux.some(n=>niveau.toLowerCase().includes(n.toLowerCase())))score+=2;
+    return{school:s,score};
+  });
+  scored.sort((a,b)=>b.score-a.score);
+  return scored[0]?.school||BTP_SCHOOLS[0];
+}
+
+
+
+/* ── ÉTAT ── */
+let student={},swipeJobs=[],cardIndex=0,matches=[],matchJust=null,isAnim=false,isDrag=false,startX=0,curX=0,dragCard=null,hasSchool=null;
+
+/* ── UTILS ── */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='flex';
+}
+function toggleChip(el){el.classList.toggle('selected');}
+function switchTab(tab){
+  const tabs=['cv','lm','orient'];
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===tab));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('visible'));
+  document.getElementById('tab-'+tab).classList.add('visible');
+}
+function updateGeoFill(s){
+  const p=((s.value-s.min)/(s.max-s.min))*100;
+  s.style.background=`linear-gradient(to right,var(--orange) ${p}%,rgba(255,255,255,.1) ${p}%)`;
+}
+
+/* ── CHOIX ÉCOLE ── */
+function setSchoolChoice(has){
+  hasSchool=has;
+  document.getElementById('btn-school-yes').classList.toggle('chosen',has);
+  document.getElementById('btn-school-no').classList.toggle('chosen',!has);
+  document.getElementById('school-yes-block').style.display=has?'block':'none';
+  document.getElementById('school-no-block').style.display=has?'none':'block';
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  // Montrer l'écran login au démarrage
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('screen-login').style.display='flex';
+  const s=document.getElementById('geo-slider');
+  if(s)updateGeoFill(s);
+  goToStep(1);
+});
+
+/* ── FORMULAIRE ── */
+const STEP_TITLES=['Qui es-tu ?','Ton parcours','Ta zone géo','CV & Motivation','Tes secteurs'];
+const STEP_SUBS=['Infos de base pour ton profil','As-tu déjà une école ou un établissement ?','Jusqu\'où peux-tu aller ?','Tes documents de candidature','Ce qui t\'attire professionnellement'];
+function goToStep(n){
+  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('visible'));
+  document.getElementById('section-'+n).classList.add('visible');
+  document.querySelectorAll('.step-seg').forEach((d,i)=>{
+    d.classList.remove('active','done');
+    if(i<n-1)d.classList.add('done');
+    else if(i===n-1)d.classList.add('active');
+  });
+  document.getElementById('form-title').textContent=STEP_TITLES[n-1];
+  document.getElementById('form-sub').textContent=STEP_SUBS[n-1];
+  const fi=document.getElementById('form-inner');
+  if(fi)fi.scrollTop=0;
+}
+
+/* ── FICHIERS ── */
+function fileSelected(input,type){
+  if(!input.files.length)return;
+  document.getElementById(type+'-fname').textContent=input.files[0].name;
+  document.getElementById(type+'-badge').classList.add('visible');
+}
+function removeFile(type){
+  document.getElementById(type+'-input').value='';
+  document.getElementById(type+'-badge').classList.remove('visible');
+}
+function handleDrag(e,z){e.preventDefault();document.getElementById(z).classList.add('dragover');}
+function handleDragLeave(z){document.getElementById(z).classList.remove('dragover');}
+function handleDrop(e,type){
+  e.preventDefault();handleDragLeave(type+'-zone');
+  if(e.dataTransfer.files.length){document.getElementById(type+'-fname').textContent=e.dataTransfer.files[0].name;document.getElementById(type+'-badge').classList.add('visible');}
+}
+
+/* ── DÉMARRER SWIPE ── */
+function startSwipe(){
+  const prenom=document.getElementById('f-prenom').value||'Étudiant';
+  const nom=document.getElementById('f-nom').value||'';
+  const ecoleInput=document.getElementById('f-ecole');
+  const ecole=hasSchool&&ecoleInput?ecoleInput.value||'Mon école':'';
+  const niveau=document.getElementById('f-niveau').value||'';
+  const ville=document.getElementById('f-geo-ville').value||document.getElementById('f-ville').value||'Rouen';
+  const rayon=parseInt(document.getElementById('geo-slider').value)||25;
+  const refNom=hasSchool?(document.getElementById('f-ref-nom').value||''):'';
+  student={prenom,nom,ecole,niveau,ville,rayon,refNom,hasSchool,fullName:prenom+(nom?' '+nom:''),initials:(prenom[0]||'?')+(nom[0]||'?')};
+  swipeJobs=JOBS.filter(j=>j.dist<=rayon);
+  if(!swipeJobs.length)swipeJobs=JOBS;
+  cardIndex=0;matches=[];
+  showScreen('screen-swipe');
+  document.getElementById('profile-avatar').textContent=student.initials.toUpperCase();
+  document.getElementById('profile-name').textContent=student.fullName;
+  const profileDetail=hasSchool&&ecole?ecole+(niveau?' · '+niveau:''):niveau||(hasSchool===false?'🔍 Recherche formation':'—');
+  const eco=profileDetail.length>22?profileDetail.substring(0,20)+'…':profileDetail;
+  document.getElementById('profile-detail').textContent=eco;
+  document.getElementById('profile-geo').textContent='📍 ≤ '+rayon+' km';
+  document.getElementById('swipe-meta').textContent=swipeJobs.length+' fiche'+(swipeJobs.length>1?'s':'')+' autour de '+ville;
+  renderCards();
+}
+
+/* ── SWIPE ── */
+function renderCards(){
+  const stack=document.getElementById('card-stack');
+  stack.innerHTML='';
+  [...swipeJobs.slice(cardIndex,cardIndex+3)].reverse().forEach(job=>stack.appendChild(createCard(job)));
+  const top=stack.querySelector('.job-card:last-child');
+  if(top)initDrag(top);
+  updateProgress();
+}
+function createCard(job){
+  const d=document.createElement('div');d.className='job-card';
+  d.innerHTML=`<div class="swipe-overlay overlay-like">💚 Ça me plait !</div><div class="swipe-overlay overlay-nope">💔 Pas pour moi</div><div class="card-top-row"><span class="card-emoji-big">${job.emoji}</span><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span class="school-badge">🎓 ${job.school||'MatchKelkun'}</span>${job.region?`<span class="region-badge">📍 ${job.region}</span>`:''}</div></div><div class="card-sector">✦ ${job.sector}</div><div class="card-title">${job.title}</div><div class="card-company">@ ${job.company}</div><div class="card-geo-row">📍 ${job.geo} · <strong style="color:var(--orange);margin-left:3px;">${job.dist} km</strong></div><div class="card-tags">${job.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div><div class="card-desc">${job.desc}</div><div class="card-footer"><div class="card-salary">💰 ${job.salary}</div><div class="card-type">${job.type}</div></div>`;
+  return d;
+}
+
+function showInfo(){
+  const job=swipeJobs[cardIndex];if(!job)return;
+  const d=job.detail||{};
+  const panel=document.createElement('div');
+  panel.className='detail-panel';
+  panel.onclick=function(e){if(e.target===panel)closeDetailPanel();};
+  panel.innerHTML=`
+    <div class="detail-sheet">
+      <div class="detail-close"><div class="detail-close-bar"></div></div>
+      <button onclick="closeDetailPanel()" style="position:absolute;right:1.2rem;top:1.2rem;background:rgba(255,255,255,.1);border:none;color:var(--white);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+      <div class="detail-header">
+        <span class="detail-emoji">${job.emoji}</span>
+        <div>
+          <div class="detail-sector-badge">${job.sector}${job.region?' · '+job.region:''}</div>
+          <div class="detail-title">${job.title}</div>
+          <div class="detail-company">@ ${job.company} · 📍 ${job.geo} · ${job.dist} km · 💰 ${job.salary}</div>
+        </div>
+      </div>
+
+      ${d.journee?`<div class="detail-block">
+        <div class="detail-block-title">☀️ Une journée type</div>
+        <div class="detail-ambiance-box">${d.journee}</div>
+      </div>`:''}
+
+      ${d.competences?`<div class="detail-block">
+        <div class="detail-block-title">🧠 Compétences clés</div>
+        <div class="detail-tag-row">${d.competences.map(c=>`<span class="detail-tag">${c}</span>`).join('')}</div>
+      </div>`:''}
+
+      ${d.evolutions?`<div class="detail-block">
+        <div class="detail-block-title">🚀 Évolutions possibles</div>
+        <ul class="detail-evol-list">${d.evolutions.map(e=>`<li>${e}</li>`).join('')}</ul>
+      </div>`:''}
+
+      ${d.formations?`<div class="detail-block">
+        <div class="detail-block-title">🎓 Formations pour ce métier</div>
+        <div class="detail-tag-row">${d.formations.map(f=>`<span class="detail-tag">📚 ${f}</span>`).join('')}</div>
+      </div>`:''}
+
+      ${d.salaire_debut?`<div class="detail-block">
+        <div class="detail-block-title">💰 Rémunération</div>
+        <div class="detail-salary-box">${d.salaire_debut}</div>
+      </div>`:''}
+
+      ${d.ambiance?`<div class="detail-block">
+        <div class="detail-block-title">👥 Ambiance & conditions</div>
+        <div class="detail-ambiance-box">${d.ambiance}</div>
+      </div>`:''}
+
+      <button class="btn-detail-like" onclick="closeDetailPanel();swipeRight();">♥ Ça m'intéresse !</button>
+      <button class="btn-detail-pass" onclick="closeDetailPanel();">Retour aux cartes</button>
+    </div>`;
+  document.body.appendChild(panel);
+  document.body.style.overflow='hidden';
+}
+function closeDetailPanel(){
+  const p=document.querySelector('.detail-panel');
+  if(p)p.remove();
+  document.body.style.overflow='';
+}
+function initDrag(card){
+  card.addEventListener('mousedown',dragStart);card.addEventListener('touchstart',dragStart,{passive:true});
+  window.addEventListener('mousemove',dragMove);window.addEventListener('touchmove',dragMove,{passive:true});
+  window.addEventListener('mouseup',dragEnd);window.addEventListener('touchend',dragEnd);
+}
+function dragStart(e){if(isAnim)return;isDrag=true;dragCard=e.currentTarget;startX=(e.touches?e.touches[0].clientX:e.clientX);dragCard.style.transition='none';}
+function dragMove(e){
+  if(!isDrag||!dragCard)return;
+  curX=(e.touches?e.touches[0].clientX:e.clientX)-startX;
+  dragCard.style.transform=`translateX(${curX}px) rotate(${curX*.07}deg)`;
+  dragCard.querySelector('.overlay-like').style.opacity=curX>50?Math.min((curX-50)/80,1):0;
+  dragCard.querySelector('.overlay-nope').style.opacity=curX<-50?Math.min((-curX-50)/80,1):0;
+}
+function dragEnd(){
+  if(!isDrag)return;isDrag=false;if(!dragCard)return;
+  dragCard.style.transition='transform .3s ease';
+  if(curX>100)doSwipeRight(dragCard);
+  else if(curX<-100)doSwipeLeft(dragCard);
+  else dragCard.style.transform='none';
+  curX=0;
+  window.removeEventListener('mousemove',dragMove);window.removeEventListener('touchmove',dragMove);
+  window.removeEventListener('mouseup',dragEnd);window.removeEventListener('touchend',dragEnd);
+}
+function swipeRight(){if(!isAnim){const t=document.querySelector('#card-stack .job-card:last-child');if(t)doSwipeRight(t);}}
+function swipeLeft(){if(!isAnim){const t=document.querySelector('#card-stack .job-card:last-child');if(t)doSwipeLeft(t);}}
+function doSwipeRight(card){
+  isAnim=true;card.classList.add('fly-right');
+  const job=swipeJobs[cardIndex];matches.push(job);matchJust=job;
+  setTimeout(()=>{isAnim=false;cardIndex++;updateMatchCounter();
+    if(cardIndex>=swipeJobs.length)showEnd();
+    else{renderCards();setTimeout(()=>showMatch(job),200);}
+  },400);
+}
+function doSwipeLeft(card){
+  isAnim=true;card.classList.add('fly-left');
+  setTimeout(()=>{isAnim=false;cardIndex++;
+    if(cardIndex>=swipeJobs.length)showEnd();else renderCards();
+  },400);
+}
+function updateMatchCounter(){const n=matches.length;document.getElementById('match-counter').textContent=n+(n>1?' matchs':' match');}
+function updateProgress(){document.getElementById('progress-fill').style.width=(cardIndex/swipeJobs.length*100)+'%';}
+function showInfo(){const job=swipeJobs[cardIndex];if(!job)return;alert(`📋 ${job.title}\n\n${job.desc}\n\n📍 ${job.geo} — ${job.dist} km\n💰 ${job.salary}\n🎓 Type : ${job.type}\n👤 ${job.contact_name}`);}
+
+/* ── MATCH ── */
+function showMatch(job){
+  currentJobForSchools=job;
+  // Reset "voir d'autres écoles" panel
+  const otherPanel=document.getElementById('other-schools-panel');
+  if(otherPanel){otherPanel.classList.remove('visible');}
+  const otherBtn=document.querySelector('.btn-other-schools');
+  if(otherBtn){otherBtn.innerHTML='🔍 Voir d\'autres centres de formation';}
+  document.getElementById('match-emoji').textContent=job.emoji;
+  document.getElementById('match-job').textContent=job.title;
+  document.getElementById('match-co').textContent=job.company;
+  document.getElementById('match-loc').textContent=job.geo;
+  document.getElementById('match-dist').textContent=job.dist+' km de toi ✓';
+  document.getElementById('match-email').textContent=job.contact.email;
+  document.getElementById('match-phone').textContent=job.contact.phone;
+  document.getElementById('match-contact').textContent=job.contact_name;
+  document.getElementById('match-sub').textContent=student.prenom+' × '+job.company+' — Mise en relation directe !';
+  const sn=student.fullName||student.prenom;
+
+  // ── ÉCOLE : toujours UNE SEULE, la plus pertinente ──
+  const trainingSection=document.getElementById('training-section');
+  const notifSchool=document.getElementById('match-notif-school');
+  const triSchool=document.getElementById('tri-school');
+  const matchSchoolLine=document.getElementById('match-school-txt');
+  const co=job.company.length>14?job.company.substring(0,12)+'…':job.company;
+  document.getElementById('tri-student').textContent=sn;
+  document.getElementById('tri-company').textContent=co;
+
+  let bestSchool;
+  if(student.hasSchool&&student.ecole){
+    // L'étudiant a déjà une école renseignée → on la garde ET on la valide par l'algo
+    // (hypothèse : on affiche son école saisie, pas de recherche algo nécessaire)
+    bestSchool={name:student.ecole,contact:student.refEmail||'votre.ecole@example.fr'};
+    const ec=student.ecole.length>14?student.ecole.substring(0,12)+'…':student.ecole;
+    triSchool.textContent=ec;
+    matchSchoolLine.textContent=student.ecole;
+    notifSchool.innerHTML=`🎓 <strong>${student.ecole}</strong> sera automatiquement notifiée de ce match et pourra valider et accompagner la mise en relation entre toi et l'entreprise.`;
+    notifSchool.style.display='block';
+    trainingSection.style.display='none';
+  } else {
+    // Pas d'école → algo : trouver la plus pertinente selon secteur + région + niveau
+    bestSchool=findBestSchool(job,student);
+    const ec=bestSchool.name.length>14?bestSchool.name.substring(0,12)+'…':bestSchool.name;
+    triSchool.textContent=ec;
+    matchSchoolLine.textContent=bestSchool.name+' (recommandée)';
+    notifSchool.innerHTML=`🎓 <strong>${bestSchool.name}</strong> est l'école partenaire recommandée pour ce secteur dans ta zone. Elle sera contactée pour t'accompagner dans ce parcours BTP.`;
+    notifSchool.style.display='block';
+    // Afficher aussi le centre de formation (1 seul) dans la section training
+    trainingSection.style.display='block';
+    const centers=TRAINING_CENTERS[job.sector]||[];
+    const list=document.getElementById('training-list');
+    if(centers.length){
+      const c=centers[0]; // UNE SEULE formation, la plus pertinente
+      list.innerHTML=`<div class="training-card" onclick="selectTraining('${c.name}')"><div class="training-card-type">${c.type}</div><div class="training-card-name">${c.name}</div><div class="training-card-details">${c.details}</div><div class="training-card-details" style="margin-top:.3rem;">📧 ${c.email} &nbsp;·&nbsp; 📞 ${c.phone}</div></div>`;
+    } else {
+      list.innerHTML='<p style="font-size:.8rem;color:var(--gray);">Contacte-nous pour trouver le bon centre dans ta zone.</p>';
+    }
+    triSchool.style.color='var(--orange)';
+  }
+
+  showScreen('screen-match');confetti();
+}
+let selectedTraining=null;
+function selectTraining(name){
+  selectedTraining=name;
+  document.querySelectorAll('.training-card').forEach(c=>{
+    c.style.borderColor=c.querySelector('.training-card-name').textContent===name?'var(--accent)':'rgba(255,209,102,.2)';
+    c.style.background=c.querySelector('.training-card-name').textContent===name?'rgba(255,209,102,.18)':'rgba(255,209,102,.07)';
+  });
+}
+function contactTraining(){
+  const name=selectedTraining||'le premier centre';
+  alert(`🏫 Demande envoyée !\n\n${student.fullName} — ta demande de contact a été transmise à ${name}.\n\nLe centre te contactera sous 48–72h pour discuter de ta candidature et du financement possible.`);
+  continueSwipe();
+}
+function sendContact(){
+  if(!matchJust)return;
+  if(student.hasSchool&&student.ecole){
+    alert(`✉️ Profil transmis !\n\n${student.fullName} — CV + lettre envoyés à ${matchJust.company}.\n\n🎓 Ton référent·e ${student.refNom||'pédagogique'} (${student.ecole}) a été notifié·e et peut valider la mise en relation.\n\n➡ L'entreprise te contactera sous 48h.`);
+  } else {
+    alert(`✉️ Profil transmis !\n\n${student.fullName} — CV + lettre envoyés à ${matchJust.company}.\n\n🏫 Pense aussi à contacter un centre de formation pour pouvoir suivre cette voie !\n\n➡ L'entreprise te contactera sous 48h.`);
+  }
+  continueSwipe();
+}
+function continueSwipe(){showScreen('screen-swipe');}
+
+/* ── VOIR D'AUTRES ÉCOLES ── */
+let currentJobForSchools=null;
+function toggleOtherSchools(){
+  const panel=document.getElementById('other-schools-panel');
+  const btn=document.querySelector('.btn-other-schools');
+  if(panel.classList.contains('visible')){
+    panel.classList.remove('visible');
+    btn.innerHTML='🔍 Voir d\'autres centres de formation';
+    return;
+  }
+  btn.innerHTML='✕ Masquer les autres centres';
+  // Afficher tous les centres du secteur (sauf le premier déjà affiché)
+  const job=currentJobForSchools||matchJust;
+  if(!job){panel.innerHTML='<p style="font-size:.78rem;color:var(--gray);">Contacte-nous pour plus de centres.</p>';panel.classList.add('visible');return;}
+  const centers=TRAINING_CENTERS[job.sector]||[];
+  const others=centers.slice(1); // tous sauf le premier
+  if(!others.length){
+    panel.innerHTML='<p style="font-size:.78rem;color:var(--gray);padding:.5rem 0;">Pas d\'autres centres répertoriés pour ce secteur dans ta région. <a href="mailto:contact@kelkun.fr" style="color:var(--orange-light);">Contacte-nous →</a></p>';
+  } else {
+    panel.innerHTML=others.map(c=>`
+      <div class="other-school-item">
+        <div class="osc-icon">🏫</div>
+        <div>
+          <div class="osc-name">${c.name}</div>
+          <div class="osc-type">${c.type}</div>
+          <div class="osc-dist">📧 ${c.email} · 📞 ${c.phone}</div>
+        </div>
+      </div>`).join('');
+  }
+  panel.classList.add('visible');
+}
+
+/* ── CONFETTI ── */
+function confetti(){
+  const c=document.getElementById('confetti');c.innerHTML='';
+  const cols=['#00B4A6','#FFD166','#00CFC0','#EF476F','#1C2D5E','#FFFFFF'];
+  for(let i=0;i<55;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.cssText=`left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()}s;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};`;c.appendChild(p);}
+}
+
+/* ── FIN ── */
+function showEnd(){
+  const n=matches.length;
+  document.getElementById('end-emoji').textContent=n===0?'🤔':n<3?'👍':n<6?'🔥':'🏆';
+  document.getElementById('end-title').textContent=n===0?'Aucun match cette fois…':n===1?'1 match trouvé !':n+' matchs trouvés !';
+  document.getElementById('end-sub').textContent=n===0?'Aucune fiche ne correspondait. Essaie avec un rayon plus large !':'Super boulot '+student.prenom+' ! Tu as '+n+' opportunité'+(n>1?'s':'')+' à saisir.';
+  const schoolNotif=document.getElementById('end-school-notif');
+  const trainingNotif=document.getElementById('end-training-notif');
+  if(student.hasSchool&&student.ecole&&n>0){
+    schoolNotif.textContent='🎓 '+student.ecole+' sera notifiée de tes matchs pour t\'accompagner.';
+    schoolNotif.style.display='block';
+    trainingNotif.style.display='none';
+  } else if(!student.hasSchool&&n>0){
+    schoolNotif.textContent='';
+    schoolNotif.style.display='none';
+    trainingNotif.style.display='block';
+  } else {
+    schoolNotif.textContent='';
+    schoolNotif.style.display='none';
+    trainingNotif.style.display='none';
+  }
+  document.getElementById('matches-list').innerHTML=matches.map(m=>`<div class="match-item"><span class="mi-emoji">${m.emoji}</span><div><div class="mi-name">${m.title}</div><div class="mi-co">${m.company} · ${m.geo}</div>${student.hasSchool&&student.ecole?`<div class="mi-school">🎓 Partenaire ${student.ecole} · ${m.dist} km</div>`:`<div class="mi-school" style="color:var(--accent);">🏫 Formation à trouver — ${m.sector}</div>`}</div></div>`).join('');
+  showScreen('screen-end');if(n>0)confetti();
+}
+
+/* ══════════════════════════════════════════
+   ORIENTATION IA — Agent conversationnel
+══════════════════════════════════════════ */
+let orientCvText='';
+let orientState={step:0,answers:{},conversationHistory:[],isRunning:false};
+
+/* CV upload */
+function orientCvSelected(input){
+  if(!input.files.length)return;
+  const f=input.files[0];
+  document.getElementById('orient-cv-fname').textContent=f.name;
+  document.getElementById('orient-cv-badge').classList.add('visible');
+  // Lire le texte si c'est un fichier texte/lisible
+  if(f.type.includes('text')||f.name.endsWith('.txt')){
+    const reader=new FileReader();
+    reader.onload=e=>{orientCvText=e.target.result.substring(0,3000);};
+    reader.readAsText(f);
+  } else {
+    // Pour PDF/DOCX, on utilise le nom de fichier + infos formulaire
+    orientCvText=`CV déposé : ${f.name} (${(f.size/1024).toFixed(0)} Ko)`;
+  }
+}
+function removeOrientCv(){
+  document.getElementById('orient-cv-input').value='';
+  document.getElementById('orient-cv-badge').classList.remove('visible');
+  orientCvText='';
+}
+
+/* Ajouter un message dans le chat */
+const KELKO_AVATAR=`<div class="orient-avatar ai" style="background:none;width:36px;height:36px;border-radius:50%;overflow:hidden;padding:2px;border:1.5px solid rgba(0,180,166,.4);flex-shrink:0;"><svg viewBox="0 0 120 140" width="32" height="32" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="72" width="60" height="52" rx="16" fill="#FFF"/><text x="60" y="105" text-anchor="middle" font-family="Arial" font-weight="900" font-size="22" fill="#1C2D5E">k</text><rect x="22" y="18" width="76" height="62" rx="24" fill="#FFF"/><rect x="30" y="26" width="60" height="44" rx="16" fill="#1C2D5E"/><circle cx="44" cy="48" r="8" fill="#FFF"/><circle cx="76" cy="48" r="8" fill="#FFF"/><circle cx="44" cy="48" r="4" fill="#E8E0FF"/><circle cx="76" cy="48" r="4" fill="#E8E0FF"/><path d="M48 63 Q60 72 72 63" stroke="#7B6FFF" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></div>`;
+function orientAddMsg(role,html,isTyping=false){
+  const chat=document.getElementById('orient-chat');
+  const div=document.createElement('div');
+  div.className='orient-msg '+(role==='ai'?'ai':'user');
+  if(isTyping){
+    div.id='orient-typing-indicator';
+    div.innerHTML=`${KELKO_AVATAR}<div class="orient-bubble"><div class="orient-typing"><span></span><span></span><span></span></div></div>`;
+  } else {
+    div.innerHTML=`${role==='ai'?KELKO_AVATAR:`<div class="orient-avatar user">👤</div>`}<div class="orient-bubble">${html}</div>`;
+  }
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+  return div;
+}
+function orientRemoveTyping(){
+  const t=document.getElementById('orient-typing-indicator');
+  if(t)t.remove();
+}
+
+/* Afficher les boutons de choix */
+function orientShowChoices(choices){
+  const container=document.getElementById('orient-choices');
+  container.innerHTML='';
+  choices.forEach(choice=>{
+    const btn=document.createElement('button');
+    btn.className='orient-choice-btn';
+    btn.textContent=choice;
+    btn.onclick=()=>orientUserPick(choice,btn);
+    container.appendChild(btn);
+  });
+}
+function orientClearChoices(){
+  document.getElementById('orient-choices').innerHTML='';
+}
+
+/* L'utilisateur choisit une réponse */
+function orientUserPick(answer,btnEl){
+  // Désactiver tous les boutons
+  document.querySelectorAll('.orient-choice-btn').forEach(b=>{b.disabled=true;b.style.opacity='.5';});
+  btnEl.classList.add('picked');btnEl.style.opacity='1';
+  // Ajouter le message utilisateur
+  orientAddMsg('user',answer);
+  orientClearChoices();
+  // Enregistrer la réponse
+  orientState.conversationHistory.push({role:'user',content:answer});
+  orientState.answers_list = orientState.answers_list || [];
+  orientState.answers_list.push(answer);
+  // Continuer la conversation
+  setTimeout(()=>orientContinue(answer),400);
+}
+
+/* Démarrer le bilan */
+async function startOrientationIA(){
+  const btn=document.getElementById('btn-orient-start');
+  if(orientState.isRunning)return;
+  orientState={step:0,answers:{},conversationHistory:[],isRunning:true};
+  btn.disabled=true;
+  btn.style.display='none';
+
+  // Préparer le contexte du profil
+  const prenom=document.getElementById('f-prenom').value||'';
+  const niveau=document.getElementById('f-niveau').value||'';
+  const cvDesc=document.getElementById('f-cv-text')?document.getElementById('f-cv-text').value||'':'';
+
+  const systemPrompt=`Tu es un conseiller d'orientation bienveillant et dynamique pour KelkunMatch, plateforme française spécialisée dans les métiers du BTP et de l'artisanat du bâtiment.
+
+CONTEXTE DU PROFIL :
+- Prénom : ${prenom||'Non renseigné'}
+- Niveau scolaire : ${niveau||'Non précisé'}
+- Description CV : ${cvDesc||'Non renseigné'}
+- Fichier CV : ${orientCvText||'Non importé'}
+
+MÉTIERS BTP DISPONIBLES SUR LA PLATEFORME :
+🧱 Maçonnerie & Gros Œuvre | ⚡ Électricité du bâtiment | 🔩 Plomberie & Chauffage | 🪵 Menuiserie & Charpente | 🏠 Couverture & Toiture | 🎨 Peinture en bâtiment | 🪨 Carrelage & Sols | 🔧 Serrurerie & Métallerie | 🚜 Conduite d'engins & VRD | 🏛 Taille de pierre & Façade
+
+CENTRES DE FORMATION BTP PARTENAIRES :
+- Maçonnerie → CCCA-BTP Occitanie, AFPA BTP Occitanie
+- Électricité → CFA Bâtiment & Énergie Toulouse, AFPA Énergie PACA
+- Plomberie → AFPA Montpellier BTP, CFA Sanitaire PACA
+- Menuiserie → Compagnons du Devoir Paris, CFA Menuiserie IDF
+- Couverture → CCCA-BTP PACA Marseille, CFA Couverture Lyon
+- Peinture → AFPA Aix BTP, CFA Peinture Occitanie
+- Carrelage → CFA Métiers du Bâtiment Nice, AFPA Carrelage Toulouse
+- Serrurerie → AFPA Seine-Saint-Denis Métallerie, CFA Serrurerie Paris
+- Conduite d'engins → CFA TP Auvergne-Rhône-Alpes, AFPA TP Lyon
+- Taille de pierre → Compagnons du Devoir Grenoble, CFA Patrimoine Paris
+
+TON RÔLE :
+1. Pose entre 5 et 7 questions FERMÉES (à choix multiples), une par une, sur les préférences : travail en extérieur/intérieur, goût pour le travail manuel, précision ou force physique, relation aux autres, matériaux préférés (bois, métal, béton, pierre), ambiance chantier ou atelier, etc.
+2. Après les réponses, génère des recommandations de métiers BTP uniquement.
+
+FORMAT DE RÉPONSE (OBLIGATOIRE) :
+Réponds TOUJOURS en JSON valide, sans markdown, sans backticks.
+
+Pour les questions : {"type":"question","message":"texte de ta question","choices":["Option A","Option B","Option C","Option D"]}
+Pour la fin : {"type":"results","message":"texte bilan personnalisé","sectors":[{"name":"Nom du métier BTP","emoji":"emoji","why":"raison personnalisée","formations":["Centre 1"]}]}
+
+Sois chaleureux, encourage le jeune, utilise son prénom si disponible. Maximum 3 métiers BTP recommandés. UNE SEULE formation par métier.`;
+
+  orientState.conversationHistory=[];
+
+  // Premier message IA
+  orientAddMsg('ai',`Super${prenom?' '+prenom:''} ! 🎯 Je vais te poser <strong>quelques questions rapides</strong> (environ 1 min) pour cerner ce qui te correspond le mieux. Il n'y a pas de bonne ou mauvaise réponse — suis ton instinct !`);
+
+  document.getElementById('orient-progress-lbl').textContent='Question 1 / ~6';
+  await orientCallAI(systemPrompt,'Commence le bilan. Pose la première question fermée.');
+}
+
+/* Continuer la conversation */
+async function orientContinue(lastAnswer){
+  orientState.step++;
+  const systemPrompt=buildOrientSystemPrompt();
+  await orientCallAI(systemPrompt,null);
+}
+
+function buildOrientSystemPrompt(){
+  const prenom=document.getElementById('f-prenom').value||'';
+  const niveau=document.getElementById('f-niveau').value||'';
+  const cvDesc=document.getElementById('f-cv-text')?document.getElementById('f-cv-text').value||'':'';
+  return `Tu es un conseiller d'orientation bienveillant pour MatchKelkun (plateforme française).
+
+PROFIL : Prénom: ${prenom||'N/A'} | Niveau: ${niveau||'N/A'} | CV: ${cvDesc||orientCvText||'N/A'}
+
+SECTEURS DISPO : Électricité & Énergie, Tech & Digital, Restauration & Hôtellerie, BTP & Construction, Mode & Beauté, Agriculture, Création & Design, Santé & Social, Auto & Transport, Artisanat
+
+CENTRES : Électricité→CFA Métiers Bâtiment 76/AFPA Rouen | Tech→Simplon Normandie/CESI Rouen | Restauration→CFA Métiers de la Table/Lycée hôtelier Rouen | BTP→CCCA-BTP Normandie/AFPA Le Havre | Beauté→CFA Beauté Normandie/IFAS Rouen | Agriculture→MFR de Boos/Lycée agricole Rouen | Design→École Sup Art Rouen/AFPA Design | Santé→IFSI CHU Rouen/Croix-Rouge Formation | Auto→CFA Auto Normandie/AFPA Auto Rouen | Artisanat→CFA Chambre Métiers 76/Compagnons du Devoir Rouen
+
+RÈGLE : Pose les questions une par une (5-7 au total) puis génère les résultats. Si tu as déjà 5+ réponses, génère les résultats.
+
+FORMAT OBLIGATOIRE (JSON pur, sans markdown) :
+Question : {"type":"question","message":"texte","choices":["A","B","C","D"]}
+Résultats : {"type":"results","message":"bilan perso","sectors":[{"name":"secteur","emoji":"🔌","why":"raison","formations":["Centre 1","Centre 2"]}]}`;
+}
+
+/* Appel API Anthropic */
+/* Agent Orientation IA — Questions simulées BTP */
+const ORIENT_QUESTIONS = [
+  {message:"Qu'est-ce que tu préfères faire de tes mains ?", choices:["🧱 Construire, assembler, maçonner","🪵 Travailler le bois et la charpente","⚡ Câbler, installer des équipements","🔩 Souder, ajuster, réparer"]},
+  {message:"Dans quel environnement te sens-tu le mieux ?", choices:["🏗 Sur un chantier en plein air","🏭 Dans un atelier couvert","🏠 Chez des particuliers (dépannage)","📐 En atelier de précision"]},
+  {message:"Quel type de travail t'attire le plus ?", choices:["💪 Travail physique et de force","🎯 Travail de précision et finition","🔬 Travail technique et diagnostic","🎨 Travail esthétique et décoratif"]},
+  {message:"Qu'est-ce qui compte le plus pour toi dans ton futur métier ?", choices:["💰 Bien gagner sa vie rapidement","🏆 Être artisan reconnu, maître de son métier","🤝 Travailler en équipe soudée","🎯 Être autonome, gérer mon chantier"]},
+  {message:"Quel matériau t'attire le plus naturellement ?", choices:["🧱 Le béton, la brique, la pierre","🪵 Le bois, le PVC, l'aluminium","⚡ Les câbles, l'électronique, les circuits","💧 Les tuyaux, le cuivre, les réseaux"]},
+  {message:"Comment tu imagines ta journée de travail idéale ?", choices:["🏗 Dehors sur un grand chantier","🏠 Chez des clients pour des dépannages","🏭 En atelier à fabriquer des pièces","🧗 En hauteur (toiture, façade, charpente)"]}
+];
+
+const ORIENT_RESULTS = {
+  "🧱 Construire": ["Maçonnerie & Gros Œuvre","Carrelage & Sols","Taille de pierre & Façade"],
+  "🪵 Bois": ["Menuiserie & Charpente","Taille de pierre & Façade"],
+  "⚡ Câbler": ["Électricité du bâtiment","Serrurerie & Métallerie"],
+  "🔩 Souder": ["Serrurerie & Métallerie","Plomberie & Chauffage"],
+  "🏗 Chantier": ["Maçonnerie & Gros Œuvre","Conduite d'engins & VRD","Couverture & Toiture"],
+  "🏭 Atelier": ["Menuiserie & Charpente","Serrurerie & Métallerie"],
+  "🏠 Particuliers": ["Plomberie & Chauffage","Électricité du bâtiment","Peinture en bâtiment"],
+  "📐 Précision": ["Carrelage & Sols","Taille de pierre & Façade","Serrurerie & Métallerie"],
+  "💪 Physique": ["Maçonnerie & Gros Œuvre","Couverture & Toiture","Conduite d'engins & VRD"],
+  "🎯 Finition": ["Carrelage & Sols","Peinture en bâtiment","Menuiserie & Charpente"],
+  "🔬 Technique": ["Électricité du bâtiment","Plomberie & Chauffage","Conduite d'engins & VRD"],
+  "🎨 Esthétique": ["Peinture en bâtiment","Carrelage & Sols","Taille de pierre & Façade"],
+  "💰 Gagner": ["Plomberie & Chauffage","Électricité du bâtiment","Conduite d'engins & VRD"],
+  "🏆 Artisan": ["Taille de pierre & Façade","Menuiserie & Charpente","Serrurerie & Métallerie"],
+  "🤝 Équipe": ["Maçonnerie & Gros Œuvre","Couverture & Toiture","Conduite d'engins & VRD"],
+  "🎯 Autonome": ["Plomberie & Chauffage","Électricité du bâtiment","Peinture en bâtiment"],
+  "🧱 Béton": ["Maçonnerie & Gros Œuvre","Taille de pierre & Façade"],
+  "🪵 Bois PVC": ["Menuiserie & Charpente"],
+  "⚡ Électronique": ["Électricité du bâtiment"],
+  "💧 Tuyaux": ["Plomberie & Chauffage"],
+  "🏗 Grand chantier": ["Conduite d'engins & VRD","Maçonnerie & Gros Œuvre"],
+  "🏠 Dépannages": ["Plomberie & Chauffage","Électricité du bâtiment"],
+  "🏭 Fabriquer": ["Menuiserie & Charpente","Serrurerie & Métallerie"],
+  "🧗 Hauteur": ["Couverture & Toiture","Taille de pierre & Façade"],
+};
+
+const ORIENT_CENTERS = {
+  "Maçonnerie & Gros Œuvre":["CCCA-BTP Normandie","AFPA Le Havre BTP"],
+  "Électricité du bâtiment":["CFA des Métiers du Bâtiment 76","AFPA Électrotechnique"],
+  "Plomberie & Chauffage":["CFA Métiers du Bâtiment 76","AFPA Rouen Énergie"],
+  "Menuiserie & Charpente":["CFA Compagnons du Devoir","CFA Chambre des Métiers 76"],
+  "Couverture & Toiture":["CCCA-BTP PACA","CFA Bâtiment Auvergne"],
+  "Peinture en bâtiment":["CFA Métiers du Bâtiment 31","AFPA Aix Finition"],
+  "Carrelage & Sols":["CFA Chambre des Métiers 13","CCCA-BTP Sud"],
+  "Serrurerie & Métallerie":["CFA Métiers du Métal IDF","AFPA Métallurgie"],
+  "Conduite d\'engins & VRD":["CFA Travaux Publics AURA","CCCA-BTP Rhône-Alpes"],
+  "Taille de pierre & Façade":["Compagnons du Devoir","CFA Pierre & Marbres"]
+};
+
+const SECTOR_WHY = {
+  "Maçonnerie & Gros Œuvre":"Tu aimes le travail manuel et physique, construire de tes mains — la maçonnerie est partout en France, toujours en demande.",
+  "Électricité du bâtiment":"Tu aimes la technique et la précision — l'électricité du bâtiment est un secteur d'avenir avec la rénovation énergétique.",
+  "Plomberie & Chauffage":"Tu aimes dépanner et résoudre des problèmes concrets — la plomberie offre autonomie et bons revenus très rapidement.",
+  "Menuiserie & Charpente":"Tu as le goût du bois et du travail bien fait — la menuiserie allie artisanat, précision et créativité.",
+  "Couverture & Toiture":"Tu n\'as pas le vertige et aimes travailler en extérieur — la couverture est un artisanat rare et très bien payé.",
+  "Peinture en bâtiment":"Tu es attentif·ve aux détails et aimes embellir les espaces — la peinture en bâtiment est un métier polyvalent et créatif.",
+  "Carrelage & Sols":"Tu aimes la géométrie et la précision du travail fini — le carrelage allie technique et sens esthétique.",
+  "Serrurerie & Métallerie":"Tu aimes travailler le métal et fabriquer des ouvrages durables — la métallerie est un savoir-faire noble très recherché.",
+  "Conduite d\'engins & VRD":"Tu aimes les machines et travailler en grand — les conducteurs d\'engins sont indispensables sur tous les grands chantiers.",
+  "Taille de pierre & Façade":"Tu as un sens artistique et aimes les matériaux nobles — la taille de pierre est un artisanat d\'excellence rare et valorisé."
+};
+
+async function orientCallAI(systemPrompt, userOverride){
+  orientAddMsg('ai','',true);
+  await new Promise(r=>setTimeout(r,800+Math.random()*600));
+  orientRemoveTyping();
+
+  if(orientState.step < ORIENT_QUESTIONS.length){
+    const q = ORIENT_QUESTIONS[orientState.step];
+    document.getElementById('orient-progress-lbl').textContent='Question '+(orientState.step+1)+' / '+ORIENT_QUESTIONS.length;
+    orientAddMsg('ai', q.message);
+    orientState.conversationHistory.push({role:'assistant', content: q.message});
+    orientShowChoices(q.choices);
+  } else {
+    // Compute results — match each answer against every key in ORIENT_RESULTS
+    const sectorScore = {};
+    (orientState.answers_list || []).forEach(ans => {
+      // Try exact match first, then emoji-prefix match, then partial word match
+      let matched = false;
+      for(const [key, sectors] of Object.entries(ORIENT_RESULTS)){
+        // Strip emojis for comparison — compare core text
+        const keyText = key.replace(/[\u{1F300}-\u{1FFFF}]|[\u2600-\u27FF]/gu,'').trim().toLowerCase();
+        const ansText = ans.replace(/[\u{1F300}-\u{1FFFF}]|[\u2600-\u27FF]/gu,'').trim().toLowerCase();
+        if(ansText.includes(keyText) || keyText.includes(ansText.substring(0,4))){
+          sectors.forEach(s=>{ sectorScore[s]=(sectorScore[s]||0)+2; });
+          matched=true; break;
+        }
+      }
+      // Fallback: keyword scan across answer
+      if(!matched){
+        const kw = {
+          'Créer':['Création & Design','Tech & Digital'],
+          'créer':['Création & Design','Tech & Digital'],
+          'dessin':['Création & Design','Mode & Beauté'],
+          'musique':['Création & Design'],
+          'bouger':['BTP & Construction','Artisanat','Auto & Transport'],
+          'sport':['BTP & Construction','Agriculture'],
+          'réparer':['Artisanat','Auto & Transport','BTP & Construction'],
+          'bricoler':['Artisanat','BTP & Construction'],
+          'coder':['Tech & Digital','Création & Design'],
+          'web':['Tech & Digital'],
+          'dehors':['Agriculture','BTP & Construction'],
+          'plein air':['Agriculture','BTP & Construction'],
+          'clients':['Restauration & Hôtellerie','Santé & Social','Mode & Beauté'],
+          'contact':['Restauration & Hôtellerie','Santé & Social'],
+          'autonomie':['Tech & Digital','Création & Design'],
+          'mains':['Artisanat','BTP & Construction','Auto & Transport'],
+          'habile':['Artisanat','BTP & Construction'],
+          'créatif':['Création & Design','Mode & Beauté'],
+          'idées':['Création & Design','Tech & Digital'],
+          'entends':['Restauration & Hôtellerie','Santé & Social'],
+          'organisé':['Tech & Digital','BTP & Construction'],
+          'gagner':['BTP & Construction','Auto & Transport','Artisanat'],
+          'impact':['Santé & Social','Agriculture'],
+          'aider':['Santé & Social','Agriculture'],
+          'équipe':['Restauration & Hôtellerie','Santé & Social'],
+          'chantier':['BTP & Construction','Artisanat'],
+          'écran':['Tech & Digital','Création & Design'],
+          'restaurant':['Restauration & Hôtellerie'],
+          'restau':['Restauration & Hôtellerie'],
+          'arts':['Création & Design','Mode & Beauté'],
+          'sciences':['Tech & Digital','Électricité & Énergie'],
+          'maths':['Tech & Digital','Électricité & Énergie'],
+          'lettres':['Restauration & Hôtellerie','Santé & Social']
+        };
+        const ansLow = ans.toLowerCase();
+        for(const [word, sectors] of Object.entries(kw)){
+          if(ansLow.includes(word)){
+            sectors.forEach(s=>{ sectorScore[s]=(sectorScore[s]||0)+1; });
+          }
+        }
+      }
+    });
+    // If still empty, give a default spread
+    if(Object.keys(sectorScore).length===0){
+      ['Tech & Digital','Création & Design','Artisanat'].forEach(s=>{ sectorScore[s]=1; });
+    }
+    const sorted = Object.entries(sectorScore).sort((a,b)=>b[1]-a[1]).slice(0,3);
+    const prenom = document.getElementById('f-prenom').value||'';
+    document.getElementById('orient-progress-lbl').textContent='✅ Bilan terminé !';
+    orientAddMsg('ai', `Super${prenom?' '+prenom:''} ! Voici mes recommandations personnalisées, basées sur toutes tes réponses 🎯`);
+    orientShowResults(sorted.map(([name])=>({
+      name, emoji: {'Création & Design':'🎨','Tech & Digital':'💻','BTP & Construction':'🏗','Artisanat':'🔧','Auto & Transport':'🚗','Agriculture':'🌿','Restauration & Hôtellerie':'🍽','Santé & Social':'🏥','Mode & Beauté':'✂️','Électricité & Énergie':'🔌'}[name]||'✦',
+      why: SECTOR_WHY[name]||'Un secteur qui correspond à ton profil.',
+      formations: ORIENT_CENTERS[name]||[]
+    })));
+  }
+}
+/* Afficher les résultats */
+function orientShowResults(sectors){
+  orientClearChoices();
+  const list=document.getElementById('orient-sectors-list');
+  list.innerHTML=sectors.map(s=>`
+    <div class="orient-sector-card">
+      <div class="orient-sector-name">${s.emoji||'✦'} ${s.name}</div>
+      <div class="orient-sector-why">${s.why||''}</div>
+      <div class="orient-sector-formations">🏫 ${(s.formations||[]).join(' · ')}</div>
+    </div>`).join('');
+  // Stocker les secteurs pour les appliquer au profil
+  window._orientSectors=sectors;
+  document.getElementById('orient-results').classList.add('visible');
+  // Scroll vers les résultats
+  setTimeout(()=>document.getElementById('orient-results').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+/* Appliquer les secteurs au profil (étape 5) */
+function applyOrientationToForm(){
+  const sectors=window._orientSectors||[];
+  if(!sectors.length){goToStep(5);return;}
+  // Correspondance noms → chips de l'étape 5
+  const map={
+    'Électricité & Énergie':'Électricité',
+    'Tech & Digital':'Tech',
+    'Restauration & Hôtellerie':'Restauration',
+    'BTP & Construction':'BTP',
+    'Mode & Beauté':'Beauté',
+    'Agriculture':'Agriculture',
+    'Création & Design':'Création',
+    'Santé & Social':'Santé',
+    'Auto & Transport':'Auto',
+    'Artisanat':'Artisanat'
+  };
+  goToStep(5);
+  setTimeout(()=>{
+    document.querySelectorAll('#section-5 .chip').forEach(chip=>{
+      sectors.forEach(s=>{
+        const key=map[s.name]||s.name;
+        if(chip.textContent.includes(key))chip.classList.add('selected');
+      });
+    });
+  },150);
+}
+
+
+function resetApp(){
+  cardIndex=0;matches=[];matchJust=null;student={};hasSchool=null;selectedTraining=null;
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=number],textarea').forEach(i=>i.value='');
+  document.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.school-choice-btn').forEach(b=>b.classList.remove('chosen'));
+  document.getElementById('school-yes-block').style.display='none';
+  document.getElementById('school-no-block').style.display='none';
+  const sl=document.getElementById('geo-slider');sl.value=25;document.getElementById('geo-display').textContent='25';updateGeoFill(sl);
+  removeFile('cv');removeFile('lm');
+  goToStep(1);showScreen('screen-welcome');
+}
+
+/* ══════════════════════════════════════════
+   LOGIN & ROUTING
+══════════════════════════════════════════ */
+function selectRole(role){
+  document.getElementById('login-role-step').style.display='none';
+  document.querySelectorAll('.login-form').forEach(f=>f.classList.remove('visible'));
+  document.getElementById('login-form-'+role).classList.add('visible');
+}
+function backToRoles(){
+  document.querySelectorAll('.login-form').forEach(f=>f.classList.remove('visible'));
+  document.getElementById('login-role-step').style.display='block';
+}
+function loginStudent(){showScreen('screen-welcome');}
+function loginRecruiter(){
+  const name=document.getElementById('r-login-email').value.split('@')[0]||'Recruteur';
+  const co=document.getElementById('r-login-co').value||'Mon entreprise';
+  recState.user={name,co,initials:(name[0]||'R').toUpperCase()};
+  document.getElementById('rec-user-name').textContent=name;
+  document.getElementById('rec-user-co').textContent=co;
+  document.getElementById('rec-avatar').textContent=recState.user.initials;
+  document.getElementById('rec-welcome-msg').textContent='Bonjour '+name+' ! 👋';
+  renderDashboard();
+  recShowScreen('screen-rec-dashboard');
+}
+function logout(){
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('screen-login').style.display='flex';
+  backToRoles();
+}
+
+/* ══════════════════════════════════════════
+   RECRUITER STATE & DATA
+══════════════════════════════════════════ */
+const EMOJI_MAP={'Électricité':'🔌','Tech':'💻','Restauration':'🍽','BTP':'🏗','Beauté':'✂️','Agriculture':'🌿','Création':'🎨','Santé':'🏥','Auto':'🚗','Artisanat':'🔧'};
+const SECTOR_EMOJIS={'🔌 Électricité & Énergie':'🔌','💻 Tech & Digital':'💻','🍽 Restauration & Hôtellerie':'🍽','🏗 BTP & Construction':'🏗','✂️ Mode & Beauté':'✂️','🌿 Agriculture':'🌿','🎨 Création & Design':'🎨','🏥 Santé & Social':'🏥','🚗 Auto & Transport':'🚗','🔧 Artisanat':'🔧'};
+
+const FAKE_CANDIDATES=[
+  {id:1,prenom:'Léa',nom:'Martin',initials:'LM',niveau:'BAC Pro en cours',ville:'Toulouse',sectors:['Tech','Création'],skills:['Créatif·ve','Digital & tech'],age:18,hasSchool:true,ecole:'Lycée Pierre de Fermat',score:92},
+  {id:2,prenom:'Karim',nom:'Idrissi',initials:'KI',niveau:'3ème / Brevet',ville:'Marseille',sectors:['BTP','Artisanat'],skills:['Manuel·le','Autonome'],age:15,hasSchool:false,ecole:'',score:88},
+  {id:3,prenom:'Inès',nom:'Dupont',initials:'ID',niveau:'2nde Professionnelle',ville:'Lyon',sectors:['Santé','Restauration'],skills:['Esprit équipe','Sens du relationnel'],age:16,hasSchool:true,ecole:'CFA des Métiers Lyon',score:85},
+  {id:4,prenom:'Tom',nom:'Leroy',initials:'TL',niveau:'BTS / BUT en cours',ville:'Paris',sectors:['Tech','Création'],skills:['Autonome','Digital & tech'],age:20,hasSchool:true,ecole:'École 42 Paris',score:95},
+  {id:5,prenom:'Amina',nom:'Boussaïd',initials:'AB',niveau:'BAC Pro en cours',ville:'Nice',sectors:['Beauté','Santé'],skills:['Créatif·ve','Sens du relationnel'],age:17,hasSchool:false,ecole:'',score:78},
+  {id:6,prenom:'Nathan',nom:'Petit',initials:'NP',niveau:'3ème / Brevet',ville:'Aix-en-Provence',sectors:['Auto','Artisanat'],skills:['Manuel·le','Motivation'],age:15,hasSchool:false,ecole:'',score:80},
+  {id:7,prenom:'Chloé',nom:'Marin',initials:'CM',niveau:'1ère / Terminale',ville:'Grenoble',sectors:['Création','Tech'],skills:['Créatif·ve','Motivation'],age:17,hasSchool:true,ecole:'Lycée Louise Michel',score:91},
+  {id:8,prenom:'Julien',nom:'Bernard',initials:'JB',niveau:'2nde Générale',ville:'Montpellier',sectors:['Agriculture','BTP'],skills:['Manuel·le','Sensibilité environnementale'],age:16,hasSchool:false,ecole:'',score:72},
+];
+
+let recState={user:{name:'',co:'',initials:'R'},jobs:[],matches:[],viewedCandidates:new Set()};
+
+function recShowScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  const el=document.getElementById(id);
+  if(el)el.style.display='flex';
+  if(id==='screen-rec-matches')renderRecMatches();
+  if(id==='screen-rec-students')renderAllCandidates('all');
+  if(id==='screen-rec-dashboard')renderDashboard();
+}
+function setRecNav(btn){
+  document.querySelectorAll('.rec-nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function renderDashboard(){
+  document.getElementById('stat-offers').textContent=recState.jobs.length;
+  document.getElementById('stat-matches').textContent=recState.matches.length;
+  document.getElementById('stat-views').textContent=recState.viewedCandidates.size;
+  const banner=document.getElementById('rec-match-banner');
+  if(recState.matches.length>0){
+    banner.style.display='flex';
+    document.getElementById('rec-banner-txt').textContent=recState.matches.length+' match'+(recState.matches.length>1?'s':'')+' en attente !';
+  } else {banner.style.display='none';}
+  const list=document.getElementById('rec-offers-list');
+  if(!recState.jobs.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-state-icon">📭</div><h3>Aucune offre publiée</h3><p style="font-size:.82rem;margin-bottom:1rem;">Créez votre première offre pour commencer à matcher.</p><button class="btn-sm" onclick="recShowScreen('screen-rec-new-job')">+ Créer une offre</button></div>`;
+  } else {
+    list.innerHTML=recState.jobs.map(j=>{
+      const mc=recState.matches.filter(m=>m.jobId===j.id).length;
+      return `<div class="offer-card"><div class="offer-emoji">${j.emoji||'📋'}</div><div class="offer-info"><div class="offer-title">${j.title}</div><div class="offer-meta">${j.type} · 📍 ${j.geo} · 💰 ${j.salary||'NC'}</div><div class="offer-badges"><span class="offer-badge active">● Publiée</span>${mc?`<span class="offer-badge matches">💚 ${mc} match${mc>1?'s':''}</span>`:''}</div></div><div class="offer-actions"><button class="btn-sm ghost" onclick="recShowScreen('screen-rec-matches')">Matchs</button><button class="btn-sm" style="background:var(--pink);font-size:.73rem;padding:7px 12px;" onclick="deleteJob(${j.id})">✕</button></div></div>`;
+    }).join('');
+  }
+  document.getElementById('rec-suggested-candidates').innerHTML=FAKE_CANDIDATES.slice(0,4).map(c=>candidateCardHTML(c,true)).join('');
+}
+
+function publishJob(){
+  const title=document.getElementById('rj-title').value.trim();
+  const sector=document.getElementById('rj-sector').value;
+  const type=document.getElementById('rj-type').value;
+  const geo=document.getElementById('rj-geo').value.trim();
+  const desc=document.getElementById('rj-desc').value.trim();
+  if(!title||!sector||!type||!geo||!desc){alert('⚠️ Merci de remplir tous les champs obligatoires (*).'); return;}
+  const emoji=SECTOR_EMOJIS[sector]||'📋';
+  const job={id:Date.now(),title,sector,type,geo,desc,emoji,salary:document.getElementById('rj-salary').value.trim()||'NC',niveau:document.getElementById('rj-niveau').value,radius:parseInt(document.getElementById('rj-radius').value)||50,email:document.getElementById('rj-email').value.trim(),phone:document.getElementById('rj-phone').value.trim(),publishedAt:new Date().toLocaleDateString('fr-FR')};
+  recState.jobs.push(job);
+  autoGenerateMatches(job);
+  ['rj-title','rj-geo','rj-salary','rj-email','rj-phone','rj-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('#rj-skills-chips .chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('rj-sector').selectedIndex=0;
+  document.getElementById('rj-type').selectedIndex=0;
+  const btn=document.querySelector('#screen-rec-new-job button[onclick="publishJob()"]');
+  if(btn){btn.textContent='✅ Offre publiée !';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent='🚀 Publier l\'offre';btn.style.background='';},1200);}
+  setTimeout(()=>recShowScreen('screen-rec-dashboard'),1300);
+}
+function deleteJob(id){
+  if(!confirm('Supprimer cette offre ?'))return;
+  recState.jobs=recState.jobs.filter(j=>j.id!==id);
+  recState.matches=recState.matches.filter(m=>m.jobId!==id);
+  renderDashboard();
+}
+
+function autoGenerateMatches(job){
+  FAKE_CANDIDATES.forEach(c=>{
+    const sectorMatch=c.sectors.some(s=>job.sector.includes(s)||job.sector.toLowerCase().includes(s.toLowerCase()));
+    if(c.score>=75&&sectorMatch&&!recState.matches.find(m=>m.jobId===job.id&&m.candidateId===c.id)){
+      recState.matches.push({jobId:job.id,candidateId:c.id,score:c.score,candidate:c,job,matchedAt:new Date().toLocaleDateString('fr-FR')});
+    }
+  });
+}
+
+function renderRecMatches(){
+  const list=document.getElementById('rec-matches-list');
+  if(!recState.matches.length){list.innerHTML=`<div class="empty-state"><div class="empty-state-icon">💤</div><h3>Pas encore de matchs</h3><p style="font-size:.82rem;">Publiez une offre pour commencer à matcher avec des candidats.</p></div>`;return;}
+  const byJob={};
+  recState.matches.forEach(m=>{if(!byJob[m.jobId])byJob[m.jobId]={job:m.job,matches:[]};byJob[m.jobId].matches.push(m);});
+  list.innerHTML=Object.values(byJob).map(g=>`<div style="margin-bottom:1.4rem;"><div style="display:flex;align-items:center;gap:9px;margin-bottom:.8rem;padding:.7rem 1rem;background:rgba(255,255,255,.04);border-radius:var(--radius-sm);"><span style="font-size:1.5rem;">${g.job.emoji}</span><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;">${g.job.title}</div><div style="font-size:.73rem;color:var(--gray);">${g.job.type} · ${g.job.geo} · <span style="color:#4DFFCC;">💚 ${g.matches.length} match${g.matches.length>1?'s':''}</span></div></div></div><div class="cand-grid">${g.matches.map(m=>candidateCardHTML(m.candidate,false,m.score)).join('')}</div></div>`).join('');
+}
+
+function candidateCardHTML(c,showScore=true,overrideScore=null){
+  const score=overrideScore||c.score;
+  const matched=recState.matches.some(m=>m.candidateId===c.id);
+  return `<div class="cand-card${matched?' matched':''}" onclick="viewCandidate(${c.id})"><div class="cand-header"><div class="cand-avatar">${c.initials}</div><div><div class="cand-name">${c.prenom} ${c.nom}</div><div class="cand-meta">📍 ${c.ville} · ${c.age} ans · ${c.niveau}</div></div></div><div class="cand-tags">${c.sectors.map(s=>`<span class="cand-tag">${EMOJI_MAP[s]||''} ${s}</span>`).join('')}${c.hasSchool?`<span class="cand-tag" style="color:#7EB8FF;">🎓 ${c.ecole}</span>`:'<span class="cand-tag" style="color:var(--accent);">🔍 Cherche formation</span>'}</div>${showScore?`<div class="cand-match-score"><span style="font-size:.7rem;color:var(--gray);">Score</span><div class="score-bar"><div class="score-fill" style="width:${score}%;"></div></div><span class="score-pct">${score}%</span></div>`:''}${matched?'<div style="font-size:.72rem;color:#4DFFCC;margin:.5rem 0 0;font-weight:600;">💚 Match obtenu</div>':''}<div class="cand-actions"><button class="btn-cand-contact" onclick="event.stopPropagation();contactCandidate(${c.id})">✉️ Contacter</button><button class="btn-cand-pass" onclick="event.stopPropagation();">Passer</button></div></div>`;
+}
+function renderAllCandidates(filter){
+  const filtered=filter==='all'?FAKE_CANDIDATES:FAKE_CANDIDATES.filter(c=>c.sectors.some(s=>filter.includes(s)||s.toLowerCase().includes(filter.toLowerCase())));
+  document.getElementById('rec-all-candidates').innerHTML=filtered.map(c=>candidateCardHTML(c,true)).join('');
+}
+function filterCandidates(filter,btn){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderAllCandidates(filter);
+}
+function viewCandidate(id){
+  const c=FAKE_CANDIDATES.find(x=>x.id===id);if(!c)return;
+  recState.viewedCandidates.add(id);
+  alert(`👤 Profil de ${c.prenom} ${c.nom}\n\n📍 ${c.ville} · ${c.age} ans\n📚 ${c.niveau}\n${c.hasSchool?'🎓 '+c.ecole:'🔍 Cherche une formation'}\n🎯 Secteurs : ${c.sectors.join(', ')}\n💡 Points forts : ${c.skills.join(', ')}\n\n📧 ${c.prenom.toLowerCase()}.${c.nom.toLowerCase()}@demo.fr`);
+}
+function contactCandidate(id){
+  const c=FAKE_CANDIDATES.find(x=>x.id===id);if(!c)return;
+  recState.viewedCandidates.add(id);
+  alert(`✉️ Message envoyé !\n\nVotre demande de mise en relation a été transmise à ${c.prenom} ${c.nom}.\n\nLe candidat sera notifié et pourra vous répondre sous 48h.\n\n📧 ${c.prenom.toLowerCase()}.${c.nom.toLowerCase()}@demo.fr`);
+}
+</script>
+</body>
+</html>
